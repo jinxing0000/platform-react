@@ -110,6 +110,7 @@ export async function fakeAccountLogin(params) {
     headers: {
       "verifyCodeToken":localStorage.getItem("verifyCodeToken")
     },
+    getResponse:true
   });
 }
 
@@ -132,7 +133,10 @@ export async function getFakeCaptcha(mobile) {
 }
 
 export async function logout() {
-  return request('/sys/getVerifyCode', {
-    method: 'GET'
+  return request('/sys/logout', {
+    method: 'POST',
+    headers: {
+      "Authorization":localStorage.getItem("token")
+    },
   });
 }

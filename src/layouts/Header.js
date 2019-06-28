@@ -8,8 +8,8 @@ import GlobalHeader from '@/components/GlobalHeader';
 import TopNavHeader from '@/components/TopNavHeader';
 import styles from './Header.less';
 
-const { Header } = Layout;
 
+const { Header } = Layout;
 class HeaderView extends Component {
   state = {
     visible: true,
@@ -114,11 +114,14 @@ class HeaderView extends Component {
   };
 
   render() {
-    const { isMobile, handleMenuCollapse, setting } = this.props;
+    const { isMobile, handleMenuCollapse, setting,login } = this.props;
     const { navTheme, layout, fixedHeader } = setting;
     const { visible } = this.state;
     const isTop = layout === 'topmenu';
     const width = this.getHeadWidth();
+    if(login.code!=0){
+      message.error(login.msg);
+    }
     const HeaderDom = visible ? (
       <Header
         style={{ padding: 0, width, zIndex: 2 }}
@@ -153,11 +156,12 @@ class HeaderView extends Component {
   }
 }
 
-export default connect(({ user, global, setting, loading }) => ({
+export default connect(({ user, global, setting, loading,login }) => ({
   currentUser: user.currentUser,
   collapsed: global.collapsed,
   fetchingMoreNotices: loading.effects['global/fetchMoreNotices'],
   fetchingNotices: loading.effects['global/fetchNotices'],
   notices: global.notices,
   setting,
+  login
 }))(HeaderView);

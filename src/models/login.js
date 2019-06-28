@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/api';
+import { fakeAccountLogin, getFakeCaptcha,logout } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
@@ -19,9 +19,13 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      localStorage.removeItem('token');
+      const result = yield call(fakeAccountLogin, payload);
+      const response=result.data;
       // Login successfully
       if (response.code === 0) {
+        const token=result.response.headers.get("Authorization");
+        localStorage.setItem('token', token);
         response.currentAuthority="admin";
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -61,26 +65,34 @@ export default {
       });
     },
 
-    *logout(_, { put }) {
-      yield put({
-        type: 'changeLoginStatus',
-        payload: {
-          currentAuthority: 'guest',
-          code:0
-        },
-      });
-      reloadAuthorized();
-      const { redirect } = getPageQuery();
-      // redirect
-      if (window.location.pathname !== '/user/login' && !redirect) {
-        yield put(
-          routerRedux.replace({
-            pathname: '/user/login',
-            search: stringify({
-              redirect: window.location.href,
-            }),
-          })
-        );
+    *logout({ payload }, { call,put }) {
+      const response = yield call(logout, payload);
+      if(response.code===0){
+        yield put({
+          type: 'changeLoginStatus',
+          payload: {
+            currentAuthority: 'guest',
+            code:0
+          },
+        });
+        reloadAuthorized();
+        const { redirect } = getPageQuery();
+        // redirect
+        if (window.location.pathname !== '/user/login' && !redirect) {
+          yield put(
+            routerRedux.replace({
+              pathname: '/user/login',
+              search: stringify({
+                redirect: window.location.href,
+              }),
+            })
+          );
+        }
+      }else{
+        yield put({
+          type: 'changeLogoutStatus',
+          payload:response
+        });
       }
     },
   },
@@ -96,6 +108,9 @@ export default {
     },
     setCaptcha(state,{payload}){
       return {...state,captchaimg:payload};
+    },
+    changeLogoutStatus(state,{payload}){
+      return {...state,code:payload.code,msg:payload.msg};
     }
   },
 };
