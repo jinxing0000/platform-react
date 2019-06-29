@@ -18,9 +18,10 @@ export default {
     },
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
+      response.user.avatar="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png";
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: response.user,
       });
     },
   },
@@ -35,7 +36,7 @@ export default {
     saveCurrentUser(state, action) {
       return {
         ...state,
-        currentUser: action.payload || {},
+        currentUser: action.payload,
       };
     },
     changeNotifyCount(state, action) {

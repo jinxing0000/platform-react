@@ -68,4 +68,6 @@ const request = extend({
   credentials: 'include', // 默认请求是否带上cookie
 });
 
+const requestHeaders={"Authorization":localStorage.token};
 export default request;
+

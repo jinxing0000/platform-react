@@ -30,7 +30,7 @@ const links = [
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" />山西旅游信息平台
+    Copyright <Icon type="copyright" />山西省农业补贴平台
   </Fragment>
 );
 
