@@ -59,7 +59,6 @@ const errorHandler = error => {
     router.push('/exception/404');
   }
 };
-
 /**
  * 配置request请求时的默认参数
  */
@@ -67,7 +66,19 @@ const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
 });
-
-const requestHeaders={"Authorization":localStorage.token};
+request.interceptors.request.use((url, options) => {
+  options.headers = {
+  ...options.headers,
+    "verifyCodeToken":localStorage.getItem("verifyCodeToken"),
+    "Authorization":localStorage.getItem("token")
+  }
+  return (
+  {
+    options: {
+    ...options,
+    interceptors: true,
+    },
+  }
+  );
+});
 export default request;
-

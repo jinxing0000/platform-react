@@ -5,9 +5,5 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  return request('/sys/user/sessionInfo',{
-    headers: {
-      "Authorization":localStorage.token
-    }
-});
+  return request('/sys/user/sessionInfo');
 }

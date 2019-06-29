@@ -107,9 +107,6 @@ export async function fakeAccountLogin(params) {
   return request('/sys/login', {
     method: 'POST',
     data: params,
-    headers: {
-      "verifyCodeToken":localStorage.getItem("verifyCodeToken")
-    },
     getResponse:true
   });
 }
@@ -134,9 +131,6 @@ export async function getFakeCaptcha(mobile) {
 
 export async function logout() {
   return request('/sys/logout', {
-    method: 'POST',
-    headers: {
-      "Authorization":localStorage.getItem("token")
-    },
+    method: 'POST'
   });
 }
