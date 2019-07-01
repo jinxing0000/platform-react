@@ -26,7 +26,7 @@ export default {
       if (response.code === 0) {
         const token=result.response.headers.get("Authorization");
         localStorage.setItem('token', token);
-        response.currentAuthority="admin";
+        response.currentAuthority="user";
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;

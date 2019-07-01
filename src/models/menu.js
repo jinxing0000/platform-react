@@ -110,12 +110,16 @@ export default {
   effects: {
     *getMenuData({ payload }, { put }) {
       const { routes, authority, path } = payload;
+      debugger;
       const originalMenuData = memoizeOneFormatter(routes, authority, path);
+      console.info("originalMenuData",originalMenuData);
       const menuData = filterMenuData(originalMenuData);
-      const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(originalMenuData);
+      console.info("menuData",menuData);
+      // const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(originalMenuData);
+      // console.info("breadcrumbNameMap",breadcrumbNameMap);
       yield put({
         type: 'save',
-        payload: { menuData, breadcrumbNameMap, routerData: routes },
+        payload: { menuData },
       });
     },
   },

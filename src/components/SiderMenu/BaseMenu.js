@@ -54,7 +54,7 @@ export default class BaseMenu extends PureComponent {
    */
   getSubMenuOrItem = item => {
     // doc: add hideChildrenInMenu
-    if (item.children && !item.hideChildrenInMenu && item.children.some(child => child.name)) {
+    if (item.list && !item.hideChildrenInMenu && item.list.some(child => child.name)) {
       const { name } = item;
       return (
         <SubMenu
@@ -68,13 +68,13 @@ export default class BaseMenu extends PureComponent {
               name
             )
           }
-          key={item.path}
+          key={item.url}
         >
-          {this.getNavMenuItems(item.children)}
+          {this.getNavMenuItems(item.list)}
         </SubMenu>
       );
     }
-    return <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>;
+    return <Menu.Item key={item.url}>{this.getMenuItemPath(item)}</Menu.Item>;
   };
 
   /**
@@ -84,7 +84,7 @@ export default class BaseMenu extends PureComponent {
    */
   getMenuItemPath = item => {
     const { name } = item;
-    const itemPath = this.conversionPath(item.path);
+    const itemPath = this.conversionPath(item.url);
     const icon = getIcon(item.icon);
     const { target } = item;
     // Is it a http link
