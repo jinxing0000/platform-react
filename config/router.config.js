@@ -323,46 +323,46 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/system/user', authority: ['admin', 'user'] },
+      { path: '/', redirect: '/system/user'},
       {
         path: '/system',
-        name: 'system',
+        name: '系统管理',
         icon: 'dashboard',
         routes: [
           {
             path: '/system/user',
-            name: 'user',
-            component: './Dashboard/Analysis',
+            name: '用户管理',
+            component: './Forms/BasicForm',
           },
           {
             path: '/system/dept',
-            name: 'dept',
-            component: './Dashboard/Monitor',
+            name: '部门管理',
+            component: './Forms/BasicForm',
           },
           {
             path: '/system/role',
-            name: 'role',
-            component: './Dashboard/Workplace',
+            name: '角色管理',
+            component: './Forms/BasicForm',
           },
           {
             path: '/system/menu',
-            name: 'menu',
-            component: './Dashboard/Workplace',
+            name: '菜单管理',
+            component: './Forms/BasicForm',
           },
           {
             path: '/system/sql',
             name: 'sql',
-            component: './Dashboard/Workplace',
+            component: './Forms/BasicForm',
           },
           {
             path: '/system/job',
-            name: 'job',
-            component: './Dashboard/Workplace',
+            name: '定时任务',
+            component: './Forms/BasicForm',
           },
           {
             path: '/system/log',
-            name: 'log',
-            component: './Dashboard/Workplace',
+            name: '系统日志',
+            component: './Forms/BasicForm',
           },
         ],
       },

@@ -114,7 +114,6 @@ class BasicLayout extends React.Component {
 
     const isTop = PropsLayout === 'topmenu';
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
-    debugger;
     const layout = (
       <Layout>
         {isTop && !isMobile ? null : (
@@ -167,8 +166,8 @@ class BasicLayout extends React.Component {
 export default connect(({ global, setting, menu: menuModel,user }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
-  // menuData: menuModel.menuData,
-  menuData: user.currentUser.menuList,
+  menuData: menuModel.menuData,
+  // menuData: user.currentUser.menuList,
   breadcrumbNameMap: menuModel.breadcrumbNameMap,
   ...setting,
 }))(props => (
