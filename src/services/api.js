@@ -104,10 +104,10 @@ export async function updateFakeList(params) {
 }
 
 export async function fakeAccountLogin(params) {
-  return request('/sys/login', {
+  return request('/api/sys/login', {
     method: 'POST',
     data: params,
-    getResponse:true
+    getResponse:true,
   });
 }
 
@@ -123,14 +123,14 @@ export async function queryNotices(params = {}) {
 }
 
 export async function getFakeCaptcha(mobile) {
-  return request('/sys/getVerifyCode', {
+  return request('/api/sys/getVerifyCode', {
     method: 'GET',
     getResponse:true
   });
 }
 
 export async function logout() {
-  return request('/sys/logout', {
+  return request('/api/sys/logout', {
     method: 'POST'
   });
 }

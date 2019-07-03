@@ -1,5 +1,5 @@
 import request from '@/utils/request';
 
 export async function queryCurrent() {
-    return request('/sys/menu/nav');
+    return request('/api/sys/menu/nav');
 }

@@ -99,6 +99,7 @@ request.interceptors.response.use(async (response) => {
   }
   //请求错误
   else if(data.code!=0 && typeof(data.code) != "undefined"){
+    debugger;
     message.error(data.msg, 10);
     return ;
   }

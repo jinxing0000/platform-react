@@ -320,7 +320,7 @@ export default [
   {
     path: '/',
     component: '../layouts/BasicLayout',
-    Routes: ['src/pages/Authorized'],
+    //Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
       { path: '/', redirect: '/system/user'},
@@ -337,7 +337,7 @@ export default [
           {
             path: '/system/dept',
             name: '部门管理',
-            component: './Forms/BasicForm',
+            component: './sys/Dept/Dept',
           },
           {
             path: '/system/role',

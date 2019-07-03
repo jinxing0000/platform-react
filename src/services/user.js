@@ -5,5 +5,5 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  return request('/sys/user/sessionInfo');
+  return request('/api/sys/user/sessionInfo');
 }
