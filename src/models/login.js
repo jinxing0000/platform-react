@@ -95,6 +95,29 @@ export default {
         });
       }
     },
+    //会话失效跳转到登陆页面
+    *sessionInvalidation({ payload }, { call,put }) {
+      yield put({
+        type: 'changeLoginStatus',
+        payload: {
+          currentAuthority: 'guest',
+          code:0
+        },
+      });
+      reloadAuthorized();
+      const { redirect } = getPageQuery();
+      // redirect
+      if (window.location.pathname !== '/user/login' && !redirect) {
+        yield put(
+          routerRedux.replace({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
+    },
   },
 
   reducers: {

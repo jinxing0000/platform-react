@@ -3,7 +3,7 @@
  * 更详细的api文档: https://bigfish.alipay.com/doc/api#request
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { notification,message } from 'antd';
 import router from 'umi/router';
 
 const codeMessage = {
@@ -42,10 +42,12 @@ const errorHandler = error => {
     });
     return;
   }
-  notification.error({
-    message: `请求错误 ${status}: ${url}`,
-    description: errortext,
-  });
+   if(typeof(status) != "undefined"&&typeof(status) != "undefined"){
+    notification.error({
+      message: `请求错误 ${status}: ${url}`,
+      description: errortext,
+    });
+   }
   // environment should not be used
   if (status === 403) {
     router.push('/exception/403');
@@ -66,6 +68,7 @@ const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
 });
+//请求之前带上请求头
 request.interceptors.request.use((url, options) => {
   options.headers = {
   ...options.headers,
@@ -81,4 +84,25 @@ request.interceptors.request.use((url, options) => {
   }
   );
 });
+//请求响应之前解析数据判断code值
+request.interceptors.response.use(async (response) => {
+  const data = await response.clone().json();
+  //判断会话失效，重新登陆
+  if(data.code===2||data.code===11){
+    message.error("您的登陆会话失效，请重新登陆！！", 10);
+    // @HACK
+    /* eslint-disable no-underscore-dangle */
+    window.g_app._store.dispatch({
+      type: 'login/sessionInvalidation',
+    });
+    return;
+  }
+  //请求错误
+  else if(data.code!=0 && typeof(data.code) != "undefined"){
+    message.error(data.msg, 10);
+    return ;
+  }
+  return response;
+})
+
 export default request;
