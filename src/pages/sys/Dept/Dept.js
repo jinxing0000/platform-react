@@ -1,21 +1,24 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Icon, Button, Divider, Tooltip, Popconfirm } from 'antd';
+import { Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal } from 'antd';
 import StandardTable from '../../../components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './Dept.less';
+import DeptAddOrUpdate from './DeptAddOrUpdate';
 
 
 
 @connect(({ dept, loading }) => ({
   dept,
   getDeptTreeListLoading: loading.effects['dept/getTreeList'],
+  saveDeptLoading: loading.effects['dept/saveDeptInfo'],
 }))
 @Form.create()
 class Dept extends PureComponent {
 
   state = {
     formValues: {},
+    edit:false
   };
 
   //页面初始化加载
@@ -32,20 +35,58 @@ class Dept extends PureComponent {
     });
   };
 
+  handleAdd = (fields, callback) => {
+    const { dispatch } = this.props;
+    debugger;
+    const deptId=fields.deptId;
+    let url="";
+    //判断为新增
+    if(deptId==null){
+      url="dept/saveDeptInfo";
+    }
+    //修改
+    else{
+      url="dept/editDeptInfo";
+    }
+    dispatch({
+      type: url,
+      payload: fields,
+    })
+    .then(() => {
+      callback("ok");
+      this.handleSearch();
+    });
+  };
+
+  deleteDeptById(id){
+    const { dispatch } = this.props;
+    debugger;
+    dispatch({
+      type: "dept/deleteDeptById",
+      payload: id,
+    })
+    .then(() => {
+      this.handleSearch();
+    });
+  }
+   closeModal=()=>{
+     this.setState({
+       edit:false
+     })
+   }
+   onOK=()=>{
+     this.setState({
+       edit:true
+     })
+   }
   render() {
     const {
       dept: { deptTreeList },
-      getDeptTreeListLoading
+      getDeptTreeListLoading,
+      saveDeptLoading
     } = this.props;
+    const{edit} =this.state;
     const columns = [
-      {
-        title: '序号',
-        dataIndex: 'num',
-        key: 'num',
-        render: (record, text, index) => {
-          return <span>{index + 1}</span>;
-        },
-      },
       {
         title: '部门名称',
         dataIndex: 'name',
@@ -78,8 +119,8 @@ class Dept extends PureComponent {
                     title: '编辑部门',
                     loading: 'department/updateDepartmentInfo',
                     btnSubTitle: '保存',
-                    component: DepartmentForm,
-                    deptList,
+                    component: DeptAddOrUpdate,
+                    deptTreeList,
                     record,
                     apply: this.handleAdd,
                   });
@@ -92,7 +133,7 @@ class Dept extends PureComponent {
               okText="删除"
               cancelText="取消"
               onConfirm={() => {
-                this.delDepartment(record.deptId);
+                this.deleteDeptById(record.deptId);
               }}
             >
               <a>
@@ -101,45 +142,54 @@ class Dept extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
+           
           </Fragment>
+      
         ),
       },
     ];
 
     return (
-        <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => {
-                  window.modal.current.getWrappedInstance().alertModal({
-                    title: '新建部门',
-                    btnSubTitle: '保存',
-                    loading: 'department/saveDepartmentInfo',
-                    component: DepartmentForm,
-                    deptList,
-                    record: {},
-                    apply: this.handleAdd,
-                  });
-                }}
-              >
-                新建
-              </Button>
-            </div>
-            <StandardTable
-              rowKey="deptId"
-              defaultExpandAllRows
-              loading={getDeptTreeListLoading}
-              selectedRows={false}
-              data={deptTreeList}
-              columns={columns}
-              onSelectRow={this.handleSelectRows}
-              onChange={this.handleStandardTableChange}
-            />
+      <PageHeaderWrapper title="部门管理">
+      <Card bordered={false}>
+        <div className={styles.tableList}>
+          <div className={styles.tableListOperator}>
+            <Button
+              icon="plus"
+              type="primary"
+              onClick={() => {
+                window.modal.current.getWrappedInstance().alertModal({
+                  title: '新建部门',
+                  btnSubTitle: '保存',
+                  loading: 'dept/saveDeptInfo',
+                  component: DeptAddOrUpdate,
+                  deptTreeList,
+                  record: {},
+                  apply: this.handleAdd,
+                });
+                this.onOK;
+              }}
+            >
+              新建
+            </Button>
           </div>
-        </Card>
+          <StandardTable
+            rowKey="deptId"
+            defaultExpandAllRows
+            loading={getDeptTreeListLoading}
+            selectedRows={false}
+            data={deptTreeList}
+            columns={columns}
+            onSelectRow={this.handleSelectRows}
+            onChange={this.handleStandardTableChange}
+            pagination={false}
+          />
+        </div>
+      </Card>
+      <Modal visible={edit} onCancel={this.closeModal} onOk={this.onOk} component={DeptAddOrUpdate} >
+          
+      </Modal>
+    </PageHeaderWrapper>
     );
   }
 }

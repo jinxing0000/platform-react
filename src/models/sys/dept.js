@@ -1,4 +1,5 @@
-import { getDeptTreeList } from '@/services/sys/dept';
+import { getDeptTreeList,saveDeptInfo,editDeptInfo,deleteDeptById } from '@/services/sys/dept';
+import { message } from 'antd';
 
 export default {
   namespace: 'dept',
@@ -17,16 +18,31 @@ export default {
   effects: {
     // 获取部门list
     *getDeptTreeList({ payload }, { call, put }) {
-        const list = yield call(getDeptTreeList, payload);
-        debugger;
+        const result = yield call(getDeptTreeList, payload);
         yield put({
             type: 'updateDeptTreeList',
             payload: {
-              list: list,
+              list: result.data,
               pagination: { current: 1, total: 3, pageSize: 10 },
             },
         });
     },
+    *saveDeptInfo({ payload }, { call, put }){
+      const parentId=payload.parentId;
+      if(parentId==null){
+        payload.parentId="0";
+      }
+      const result = yield call(saveDeptInfo, payload);
+      message.success("新增部门成功！！", 10);
+    },
+    *editDeptInfo({ payload }, { call, put }){
+      const result = yield call(editDeptInfo, payload);
+      message.success("修改部门成功！！", 10);
+    },
+    *deleteDeptById({ payload }, { call, put }){
+      const result = yield call(deleteDeptById, payload);
+      message.success("删除部门成功！！", 10);
+    }
   },
 
   reducers: {

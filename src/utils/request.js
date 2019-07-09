@@ -98,12 +98,12 @@ request.interceptors.response.use(async (response) => {
     return;
   }
   //请求错误
-  else if(data.code!=0 && typeof(data.code) != "undefined"){
-    debugger;
+  else if(data.code!==0 && typeof(data.code) !== "undefined"){
     message.error(data.msg, 10);
     return ;
+  }else{
+    return response;
   }
-  return response;
 })
 
 export default request;

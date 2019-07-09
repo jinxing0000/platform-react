@@ -350,7 +350,7 @@ export default [
             component: './Forms/BasicForm',
           },
           {
-            path: '/system/sql',
+            path: '/list/table-list',
             name: 'sql',
             component: './Forms/BasicForm',
           },

@@ -112,6 +112,7 @@ class StandardTable extends PureComponent {
           pagination={paginationProps}
           onChange={this.handleTableChange}
           {...rest}
+          size="small"
         />
       </div>
     );

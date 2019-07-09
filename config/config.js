@@ -11,7 +11,7 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, TEST } = process.env;
 
 const target = {
   img: 'http://127.0.0.1:8881',
-  service: 'http://192.168.3.180:8080',
+  service: 'http://127.0.0.1:8080',
 };
 
 const plugins = [

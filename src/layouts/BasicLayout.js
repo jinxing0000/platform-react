@@ -12,6 +12,9 @@ import Context from './MenuContext';
 import SiderMenu from '@/components/SiderMenu';
 import getPageTitle from '@/utils/getPageTitle';
 import styles from './BasicLayout.less';
+import BModal from '../components/nd_component/BModal';
+import BOfficeModal from '../components/nd_component/BOfficeModal';
+import BAuditModal from '../components/nd_component/BAuditModal/BAuditModal';
 
 // lazy load SettingDrawer
 const SettingDrawer = React.lazy(() => import('@/components/SettingDrawer'));
@@ -59,6 +62,9 @@ class BasicLayout extends React.Component {
       type: 'menu/getMenuData',
       payload: { routes, path, authority },
     });
+    window.modal = React.createRef();
+    window.modalOffice = React.createRef();
+    window.modalAudit = React.createRef();
   }
 
   getContext() {
@@ -141,6 +147,8 @@ class BasicLayout extends React.Component {
           />
           <Content className={styles.content} style={contentStyle}>
             {children}
+            <BOfficeModal ref={window.modalOffice} />
+            <BAuditModal ref={window.modalAudit} />
           </Content>
           <Footer />
         </Layout>
@@ -158,6 +166,7 @@ class BasicLayout extends React.Component {
           </ContainerQuery>
         </DocumentTitle>
         <Suspense fallback={null}>{this.renderSettingDrawer()}</Suspense>
+        <BModal ref={window.modal} />
       </React.Fragment>
     );
   }
