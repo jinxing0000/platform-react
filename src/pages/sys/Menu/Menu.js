@@ -3,20 +3,20 @@ import { connect } from 'dva';
 import { Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal } from 'antd';
 import StandardTable from '../../../components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import styles from './Dept.less';
-import DeptAddOrUpdate from './DeptAddOrUpdate';
+import styles from './Menu.less';
+import MenuAddOrUpdate from './MenuAddOrUpdate';
 
 
 
-@connect(({ dept, loading }) => ({
-  dept,
-  getDeptTreeListLoading: loading.effects['dept/getTreeList'],
-  saveDeptLoading: loading.effects['dept/saveDeptInfo'],
-  editDeptLoading: loading.effects['dept/editDeptInfo'],
-  deleteDeptByIdLoading: loading.effects['dept/deleteDeptById'],
+@connect(({ menu, loading }) => ({
+  menu,
+  getMenuTreeListLoading: loading.effects['menu/getMenuTreeList'],
+  saveMenuLoading: loading.effects['menu/saveMenuInfo'],
+  editMenuLoading: loading.effects['menu/editMenuInfo'],
+  deleteMenuByIdLoading: loading.effects['menu/deleteMenuById'],
 }))
 @Form.create()
-class Dept extends PureComponent {
+class Menu extends PureComponent {
 
   state = {
     formValues: {},
@@ -33,35 +33,38 @@ class Dept extends PureComponent {
    handleSearch = e => {
     const { dispatch, form } = this.props;
     dispatch({
-      type: 'dept/getDeptTreeList',
+      type: 'menu/getMenuTreeList',
     });
   };
   //新增修改部门
-  handleSaveDeptInfo = (fields, callback) => {
+  handleSaveMenuInfo = (fields, callback) => {
     const { dispatch } = this.props;
-    const deptId=fields.deptId;
+    const menuId=fields.menuId;
     let url="";
     //判断为新增
-    if(deptId==null){
-      url="dept/saveDeptInfo";
+    if(menuId==null){
+      url="menu/saveMenuInfo";
     }
     //修改
     else{
-      url="dept/editDeptInfo";
+      url="menu/editMenuInfo";
     }
     dispatch({
       type: url,
       payload: fields,
     })
-    .then(() => {
-      callback('ok');
+    .then(code => {
+      debugger;
+      if (code === 0) {
+        callback('ok');
+      }
     });
   };
   //删除部门
-  deleteDeptById(id){
+  deleteMenuById(id){
     const { dispatch } = this.props;
     dispatch({
-      type: "dept/deleteDeptById",
+      type: "menu/deleteMenuById",
       payload: id,
     })
     .then(() => {
@@ -99,26 +102,41 @@ class Dept extends PureComponent {
    }
   render() {
     const {
-      dept: { deptTreeList,deptInfo },
-      getDeptTreeListLoading,
-      saveDeptLoading,
-      editDeptLoading,
-      deleteDeptByIdLoading
+      menu: { menuTreeList},
+      getMenuTreeListLoading,
+      saveMenuLoading,
+      editMenuLoading,
+      deleteMenuByIdLoading
     } = this.props;
     const{edit} =this.state;
     const columns = [
       {
-        title: '部门名称',
+        title: '菜单名称',
         dataIndex: 'name',
         key: 'name',
       },
       {
-        title: '部门编号',
-        dataIndex: 'code',
-        key: 'code',
+        title: '类型',
+        dataIndex: 'type',
+        key: 'type',
+        render: record => {
+          switch (record) {
+            case '0':
+              return <span>目录</span>;
+              break;
+            case '1':
+              return <span>菜单</span>;
+              break;
+            case '2':
+              return <span>按钮</span>;
+              break;
+            default:
+              break;
+          }
+        },
       },
       {
-        title: '排序号',
+        title: '排序',
         dataIndex: 'orderNum',
         key: 'orderNum',
       },
@@ -130,30 +148,30 @@ class Dept extends PureComponent {
             {/*<Icon type="eye-o" style={{ fontSize: '15px' }} />*/}
             {/*</Tooltip>*/}
             {/*<Divider type="vertical" />*/}
-            <Tooltip placement="bottom" title="编辑">
+            <Tooltip placement="bottom" title="编辑菜单">
               <Icon
                 type="edit"
                 style={{ fontSize: '15px' }}
                 onClick={() => {
                   window.modal.current.getWrappedInstance().alertModal({
                     title: '编辑部门',
-                    loading: 'dept/editDeptInfo',
+                    loading: 'menu/editMenuInfo',
                     btnSubTitle: '修改',
-                    component: DeptAddOrUpdate,
-                    deptTreeList,
+                    component: MenuAddOrUpdate,
+                    menuTreeList,
                     record,
-                    apply: this.handleSaveDeptInfo,
+                    apply: this.handleSaveMenuInfo,
                   });
                 }}
               />
             </Tooltip>
             <Divider type="vertical" />
             <Popconfirm
-              title="确认删除这个部门？"
+              title="确认删除这个菜单？"
               okText="删除"
               cancelText="取消"
               onConfirm={() => {
-                this.deleteDeptById(record.deptId);
+                this.deleteMenuById(record.menuId);
               }}
             >
               <a>
@@ -179,26 +197,25 @@ class Dept extends PureComponent {
               type="primary"
               onClick={() => {
                 window.modal.current.getWrappedInstance().alertModal({
-                  title: '新增部门',
+                  title: '新增菜单',
                   btnSubTitle: '新增',
-                  loading: 'dept/saveDeptInfo',
-                  component: DeptAddOrUpdate,
-                  deptTreeList,
-                  record: {},
-                  apply: this.handleSaveDeptInfo,
+                  loading: 'menu/saveMenuInfo',
+                  component: MenuAddOrUpdate,
+                  menuTreeList,
+                  record: {type:"1"},
+                  apply: this.handleSaveMenuInfo,
                 });
-                this.onOK;
               }}
             >
-              新建
+               新增
             </Button>
           </div>
           <StandardTable
-            rowKey="deptId"
+            rowKey="menuId"
             defaultExpandAllRows
-            loading={getDeptTreeListLoading||saveDeptLoading||editDeptLoading||deleteDeptByIdLoading}
+            loading={getMenuTreeListLoading||saveMenuLoading||editMenuLoading||deleteMenuByIdLoading}
             selectedRows={false}
-            data={deptTreeList}
+            data={menuTreeList}
             columns={columns}
             onSelectRow={this.handleSelectRows}
             onChange={this.handleStandardTableChange}
@@ -214,4 +231,4 @@ class Dept extends PureComponent {
   }
 }
 
-export default Dept;
+export default Menu;

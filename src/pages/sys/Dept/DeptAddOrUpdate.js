@@ -13,16 +13,16 @@ export default class DeptAddOrUpdate extends Component {
       if (value && value !== '0') {
         return value;
       } else if (value && value === '0') {
-        return '一级部门';
+        return '根部门';
       } else {
         return null;
       }
     };
     return (
       <Form>
-        {form.getFieldDecorator('salt', {
+        {/* {form.getFieldDecorator('salt', {
           initialValue: record.salt ? record.salt : null,
-        })(<Input type="hidden" />)}
+        })(<Input type="hidden" />)} */}
         {form.getFieldDecorator('deptId', {
           initialValue: record.deptId ? record.deptId : null,
         })(<Input type="hidden" />)}

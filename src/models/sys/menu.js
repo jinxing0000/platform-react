@@ -2,8 +2,8 @@ import memoizeOne from 'memoize-one';
 import isEqual from 'lodash/isEqual';
 import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
-import { menu } from '../defaultSettings';
-import { queryCurrent } from '@/services/menu';
+import { menu } from '../../defaultSettings';
+import { queryCurrent,getMenuTreeList,saveMenuInfo,editMenuInfo,deleteMenuById } from '@/services/sys/menu';
 
 const { check } = Authorized;
 
@@ -106,6 +106,14 @@ export default {
     menuData: [],
     routerData: [],
     breadcrumbNameMap: {},
+    menuTreeList: {
+      list: [],
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10, 
+      },
+     },
   },
 
   effects: {
@@ -120,6 +128,35 @@ export default {
         payload: { menuData, breadcrumbNameMap, routerData: routes },
       });
     },
+    *getMenuTreeList({ payload }, { call,put }){
+      const result = yield call(getMenuTreeList, payload);
+      yield put({
+        type: 'updateMenuTreeList',
+        payload: {
+          list: result,
+          pagination: { current: 1, total: 3, pageSize: 10 },
+        },
+      });
+    },
+    *saveMenuInfo({ payload }, { call, put }){
+      const parentId=payload.parentId;
+      if(parentId==null){
+        payload.parentId="0";
+      }
+      const result = yield call(saveMenuInfo, payload);
+      message.success("新增菜单成功！！", 10);
+    },
+    *editMenuInfo({ payload }, { call, put }){
+      if(payload.parentId==='根目录'){
+        payload.parentId="0";
+      }
+      const result = yield call(editMenuInfo, payload);
+      message.success("修改菜单成功！！", 10);
+    },
+    *deleteMenuById({ payload }, { call, put }){
+      const result = yield call(deleteMenuById, payload);
+      message.success("删除菜单成功！！", 10);
+    },
   },
 
   reducers: {
@@ -128,6 +165,9 @@ export default {
         ...state,
         ...action.payload,
       };
+    },
+    updateMenuTreeList(state, { payload }) {
+        return { ...state, menuTreeList: payload };
     },
   },
 };

@@ -20,10 +20,13 @@ export async function editDeptInfo(params) {
         },
       });
 }
-export async function deleteDeptById(id) {
-    return request(`/api/sys/dept/delete?deptId=${id}`,{
+export async function deleteDeptById(deptId) {
+    return request(`/api/sys/dept/delete?deptId=${deptId}`,{
         method: 'DELETE',
       });
+}
+export async function getDeptInfoById(deptId) {
+  return request(`/api/sys/dept/info?deptId=${deptId}`);
 }
 
 

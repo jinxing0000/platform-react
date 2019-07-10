@@ -337,7 +337,7 @@ export default [
           {
             path: '/system/dept',
             name: '部门管理',
-            component: './sys/Dept/Dept',
+            component: './Sys/Dept/Dept',
           },
           {
             path: '/system/role',
@@ -347,7 +347,7 @@ export default [
           {
             path: '/system/menu',
             name: '菜单管理',
-            component: './Forms/BasicForm',
+            component: './Sys/Menu/Menu',
           },
           {
             path: '/list/table-list',
