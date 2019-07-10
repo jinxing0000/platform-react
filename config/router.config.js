@@ -342,7 +342,7 @@ export default [
           {
             path: '/system/role',
             name: '角色管理',
-            component: './Forms/BasicForm',
+            component: './Sys/Role/Role',
           },
           {
             path: '/system/menu',
