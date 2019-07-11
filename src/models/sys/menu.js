@@ -4,6 +4,7 @@ import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
 import { menu } from '../../defaultSettings';
 import { queryCurrent,getMenuTreeList,saveMenuInfo,editMenuInfo,deleteMenuById } from '@/services/sys/menu';
+import { message } from 'antd';
 
 const { check } = Authorized;
 
