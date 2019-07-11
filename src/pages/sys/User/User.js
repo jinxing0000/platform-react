@@ -3,22 +3,22 @@ import { connect } from 'dva';
 import { Row, Col,Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal,message,Input } from 'antd';
 import StandardTable from '../../../components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import styles from './Role.less';
-import RoleAddOrUpdate from './RoleAddOrUpdate';
+import styles from './User.less';
+import UserAddOrUpdate from './UserAddOrUpdate';
 const { Item: FormItem } = Form;
 const { confirm } = Modal;
 
 
 
-@connect(({ role, loading }) => ({
-  role,
-  getRoleListLoading: loading.effects['role/getRoleList'],
-  saveRoleLoading: loading.effects['role/saveRoleInfo'],
-  editRoleLoading: loading.effects['role/editRoleInfo'],
-  deleteRoleByIdsLoading: loading.effects['role/deleteRoleByIds'],
+@connect(({ user, loading }) => ({
+  user,
+  getUserListLoading: loading.effects['user/getUserList'],
+  saveUserLoading: loading.effects['user/saveUserInfo'],
+  editUserLoading: loading.effects['user/editUserInfo'],
+  deleteUserByIdsLoading: loading.effects['role/deleteUserByIds'],
 }))
 @Form.create()
-class Role extends PureComponent {
+class User extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -30,17 +30,17 @@ class Role extends PureComponent {
 
   //页面初始化加载
   componentDidMount() {
-    this.getRoleList(this.state.params);
+    this.getUserList(this.state.params);
   }
-  //获取角色list数据
-  getRoleList(params){
+  //获取用户list数据
+  getUserList(params){
     const { dispatch } = this.props;
     dispatch({
-      type: 'role/getRolePageList',
+      type: 'user/getUserList',
       payload: params,
     });
   } 
-   //查询角色list
+   //条件查询list
   handleSearch= e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
@@ -55,7 +55,7 @@ class Role extends PureComponent {
       this.setState({
         params: values,
       });
-      this.getRoleList(values);
+      this.getUserList(values);
     });
   };
   //重置查询条件
@@ -67,61 +67,61 @@ class Role extends PureComponent {
     this.setState({
       params: searchParams,
     });
-    this.getRoleList(searchParams);
+    this.getUserList(searchParams);
   };
-  //新增修改部门
-  handleSaveRoleInfo = (fields,callback) => {
+  //新增修改用户信息
+  handleSaveUserInfo = (fields,callback) => {
+    debugger;
     const { dispatch } = this.props;
-    const roleId=fields.roleId;
+    const userId=fields.userId;
     let url="";
     //判断为新增
-    if(roleId==null){
-      url="role/saveRoleInfo";
+    if(userId==null){
+      url="user/saveUserInfo";
     }
     //修改
     else{
-      url="role/editRoleInfo";
+      url="user/editUserInfo";
     }
     dispatch({
       type: url,
       payload: fields,
     })
     .then(() => {
-      debugger;
       callback('ok');
-      this.getRoleList(this.state.params);
+      this.getUserList(this.state.params);
     });
   };
-  //删除部门
-  deleteRoleByIds(ids){
+  //删除用户
+  deleteUserByIds(ids){
     const { dispatch } = this.props;
     dispatch({
-      type: "role/deleteRoleByIds",
+      type: "user/deleteUserByIds",
       payload: ids,
     })
     .then(() => {
-      this.getRoleList(this.state.params);
+      this.getUserList(this.state.params);
     });
   }
-  //批量删除角色信息
-  batchDeleteRole(){
+  //批量删除用户信息
+  batchDeleteUser(){
     const {selectedRows} = this.state;
     if(selectedRows.length===0){
-      message.error("请选择角色！！", 10);
+      message.error("请选择用户！！", 10);
        return ;
     }
     let ids=new Array();
     for(var i=0;i<selectedRows.length;i++){
-      ids[i]=selectedRows[i].roleId;
+      ids[i]=selectedRows[i].userId;
     }
-    let rolePage=this;
+    let userPage=this;
     confirm({
-      title: '您确定要删除所选角色?',
+      title: '您确定要删除所选用户?',
       okText: '删除',
       okType: 'danger',
       cancelText: '取消',
       onOk() {
-        rolePage.deleteRoleByIds(ids);
+        userPage.deleteUserByIds(ids);
       },
       onCancel() {
           
@@ -152,47 +152,14 @@ class Role extends PureComponent {
     this.setState({
       params: searchParams,
     });
-    this.getRoleList(searchParams);
+    this.getUserList(searchParams);
   };
-
-
-  //按照id获取部门数据
-  getDeptInfoById(id){
-    const { dispatch,deptTreeList,deptInfo } = this.props;
-    dispatch({
-      type: "dept/getDeptInfoById",
-      payload: id,
-    }).then(() => {
-      window.modal.current.getWrappedInstance().alertModal({
-        title: '编辑角色',
-        loading: 'role/editRoleInfo',
-        btnSubTitle: '修改',
-        component: DeptAddOrUpdate,
-        deptTreeList,
-        deptInfo,
-        apply: this.handleAdd,
-      });
-    });
-  }
 
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
     });
   };
-
-   closeModal=()=>{
-     this.setState({
-       edit:false
-     })
-   }
-   onOK=()=>{
-     this.setState({
-       edit:true
-     })
-   }
-
-   
    renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -202,13 +169,8 @@ class Role extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
-            <FormItem label="角色名称">
-              {getFieldDecorator('roleName',{initialValue: params.roleName,})(<Input placeholder="请输入角色名称" />)}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="角色编码">
-              {getFieldDecorator('roleCode',{initialValue: params.roleCode})(<Input placeholder="请输入角色编码" />)}
+            <FormItem label="用户名">
+              {getFieldDecorator('userName',{initialValue: params.userName,})(<Input placeholder="请输入用户名" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -227,13 +189,12 @@ class Role extends PureComponent {
   } 
   render() {
     const {
-      role: { roleList,deptInfo },
-      getRoleListLoading,
-      saveRoleLoading,
-      editRoleLoading,
-      deleteRoleByIdsLoading
+      user: { userList},
+      getUserListLoading,
+      saveUserLoading,
+      editUserLoading,
+      deleteUserByIdsLoading
     } = this.props;
-    const{edit} =this.state;
     const columns = [
     {
         title: '序号',
@@ -244,19 +205,29 @@ class Role extends PureComponent {
         },
      },
     {
-        title: '角色编码',
-        dataIndex: 'roleCode',
-        key: 'roleCode',
+        title: '用户名',
+        dataIndex: 'username',
+        key: 'username',
     },
     {
-        title: '角色名称',
-        dataIndex: 'roleName',
-        key: 'roleName',
+        title: '昵称',
+        dataIndex: 'nickName',
+        key: 'nickName',
     },  
     {
-        title: '创建时间',
-        key: 'createTime',
-        dataIndex: 'createTime',
+        title: '邮箱',
+        key: 'email',
+        dataIndex: 'email',
+    },
+    {
+        title: '手机号',
+        key: 'mobile',
+        dataIndex: 'mobile',
+    },
+    {
+        title: '状态',
+        key: 'status',
+        dataIndex: 'status',
     },
       {
         title: '操作',
@@ -272,25 +243,25 @@ class Role extends PureComponent {
                 style={{ fontSize: '15px' }}
                 onClick={() => {
                   window.modal.current.getWrappedInstance().alertModal({
-                    title: '编辑部门',
-                    loading: 'role/editRoleInfo',
+                    title: '编辑用户',
+                    loading: 'user/editUserInfo',
                     btnSubTitle: '修改',
-                    component: RoleAddOrUpdate,
+                    component: UserAddOrUpdate,
                     record,
-                    apply: this.handleSaveRoleInfo,
+                    apply: this.handleSaveUserInfo,
                   });
                 }}
               />
             </Tooltip>
             <Divider type="vertical" />
             <Popconfirm
-              title="确认删除这个角色吗？"
+              title="确认删除这个用户吗？"
               okText="删除"
               cancelText="取消"
               onConfirm={() => {
                 let ids=new Array();
-                ids[0]=record.roleId;
-                this.deleteRoleByIds(ids);
+                ids[0]=record.userId;
+                this.deleteUserByIds(ids);
               }}
             >
               <a>
@@ -307,7 +278,6 @@ class Role extends PureComponent {
     ];
 
     return (
-      // <PageHeaderWrapper title="部门管理">
       <Card bordered={false}>
         <div className={styles.tableList}>
         <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
@@ -317,12 +287,12 @@ class Role extends PureComponent {
               type="primary"
               onClick={() => {
                 window.modal.current.getWrappedInstance().alertModal({
-                  title: '新增角色',
+                  title: '新增用户',
                   btnSubTitle: '新增',
-                  loading: 'role/saveRoleInfo',
-                  component: RoleAddOrUpdate,
+                  loading: 'user/saveUserInfo',
+                  component: UserAddOrUpdate,
                   record: {},
-                  apply: this.handleSaveRoleInfo,
+                  apply: this.handleSaveUserInfo,
                 });
               }}
             >
@@ -332,30 +302,26 @@ class Role extends PureComponent {
               icon="delete"
               type="danger"
               onClick={() => {
-                  this.batchDeleteRole();
+                  this.batchDeleteUser();
               }}
             >
               批量删除
             </Button>
           </div>
           <StandardTable
-            rowKey="roleId"
+            rowKey="userId"
             defaultExpandAllRows
-            loading={getRoleListLoading||saveRoleLoading||editRoleLoading||deleteRoleByIdsLoading}
+            loading={getUserListLoading||saveUserLoading||editUserLoading||deleteUserByIdsLoading}
             selectedRows={true}
-            data={roleList}
+            data={userList}
             columns={columns}
             onSelectRow={this.handleSelectRows}
             onChange={this.handleStandardTableChange}
           />
         </div>
       </Card>
-      // <Modal visible={edit} onCancel={this.closeModal} onOk={this.onOk} component={DeptAddOrUpdate} >
-          
-      // </Modal>
-      // </PageHeaderWrapper>
     );
   }
 }
 
-export default Role;
+export default User;

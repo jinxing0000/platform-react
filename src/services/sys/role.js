@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-export async function getRoleList(params) {
+export async function getRolePageList(params) {
     let paramsStr="";
     for (var index in params){
       if(typeof(params[index]) !== "undefined"){
@@ -8,6 +8,15 @@ export async function getRoleList(params) {
       }
     }
     return request(`/api/sys/role/list?`+paramsStr);
+}
+export async function getRoleList(params) {
+  let paramsStr="";
+  for (var index in params){
+    if(typeof(params[index]) !== "undefined"){
+      paramsStr+=index+"="+params[index]+"&";
+    }
+  }
+  return request(`/api/sys/role/list?`+paramsStr);
 }
 export async function saveRoleInfo(params) {
     return request(`/api/sys/role/save`,{

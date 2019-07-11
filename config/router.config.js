@@ -332,7 +332,7 @@ export default [
           {
             path: '/system/user',
             name: '用户管理',
-            component: './Forms/BasicForm',
+            component: './Sys/User/User',
           },
           {
             path: '/system/dept',

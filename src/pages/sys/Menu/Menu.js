@@ -19,8 +19,7 @@ import MenuAddOrUpdate from './MenuAddOrUpdate';
 class Menu extends PureComponent {
 
   state = {
-    formValues: {},
-    edit:false
+      
   };
 
   //页面初始化加载
@@ -30,7 +29,7 @@ class Menu extends PureComponent {
   }
 
    //查询部门tree
-   handleSearch = e => {
+   handleSearch () {
     const { dispatch, form } = this.props;
     dispatch({
       type: 'menu/getMenuTreeList',
@@ -38,6 +37,7 @@ class Menu extends PureComponent {
   };
   //新增修改部门
   handleSaveMenuInfo = (fields, callback) => {
+    debugger;
     const { dispatch } = this.props;
     const menuId=fields.menuId;
     let url="";
@@ -53,11 +53,9 @@ class Menu extends PureComponent {
       type: url,
       payload: fields,
     })
-    .then(code => {
-      debugger;
-      if (code === 0) {
-        callback('ok');
-      }
+    .then(() => {
+      callback('ok');
+      this.handleSearch();
     });
   };
   //删除部门
@@ -71,35 +69,6 @@ class Menu extends PureComponent {
       this.handleSearch();
     });
   }
-  //按照id获取部门数据
-  getDeptInfoById(id){
-    const { dispatch,deptTreeList,deptInfo } = this.props;
-    dispatch({
-      type: "dept/getDeptInfoById",
-      payload: id,
-    }).then(() => {
-      window.modal.current.getWrappedInstance().alertModal({
-        title: '编辑部门',
-        loading: 'dept/editDeptInfo',
-        btnSubTitle: '修改',
-        component: DeptAddOrUpdate,
-        deptTreeList,
-        deptInfo,
-        apply: this.handleAdd,
-      });
-    });
-  }
-
-   closeModal=()=>{
-     this.setState({
-       edit:false
-     })
-   }
-   onOK=()=>{
-     this.setState({
-       edit:true
-     })
-   }
   render() {
     const {
       menu: { menuTreeList},
@@ -108,7 +77,6 @@ class Menu extends PureComponent {
       editMenuLoading,
       deleteMenuByIdLoading
     } = this.props;
-    const{edit} =this.state;
     const columns = [
       {
         title: '菜单名称',
@@ -154,7 +122,7 @@ class Menu extends PureComponent {
                 style={{ fontSize: '15px' }}
                 onClick={() => {
                   window.modal.current.getWrappedInstance().alertModal({
-                    title: '编辑部门',
+                    title: '编辑菜单',
                     loading: 'menu/editMenuInfo',
                     btnSubTitle: '修改',
                     component: MenuAddOrUpdate,
@@ -188,7 +156,6 @@ class Menu extends PureComponent {
     ];
 
     return (
-      // <PageHeaderWrapper title="部门管理">
       <Card bordered={false}>
         <div className={styles.tableList}>
           <div className={styles.tableListOperator}>
@@ -223,10 +190,6 @@ class Menu extends PureComponent {
           />
         </div>
       </Card>
-      // <Modal visible={edit} onCancel={this.closeModal} onOk={this.onOk} component={DeptAddOrUpdate} >
-          
-      // </Modal>
-    //</PageHeaderWrapper>
     );
   }
 }

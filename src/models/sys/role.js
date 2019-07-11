@@ -1,4 +1,4 @@
-import { getRoleList,saveRoleInfo,getRoleInfoById,editRoleInfo,deleteRoleByIds } from '@/services/sys/role';
+import { getRoleList,saveRoleInfo,getRoleInfoById,editRoleInfo,deleteRoleByIds,getRolePageList } from '@/services/sys/role';
 import { message } from 'antd';
 
 export default {
@@ -18,7 +18,7 @@ export default {
 
   effects: {
     // 获取角色list
-    *getRoleList({ payload }, { call, put }) {
+    *getRolePageList({ payload }, { call, put }) {
         debugger;
         const result = yield call(getRoleList, payload);
         yield put({
@@ -52,6 +52,14 @@ export default {
             payload: result.data
         });
         return result.data.menuIdList;
+    },
+    //角色列表                          
+    *getRoleList({ payload }, { call, put }){
+      const result = yield call(getRoleList, payload);
+      yield put({
+        type: 'setRoleList',
+        payload: result.data
+      });
     }
   },
 
@@ -61,6 +69,9 @@ export default {
     },
     setRoleInfo(state, { payload }){
       return { ...state, roleInfo: payload };
+    },
+    setRoleList(state, { payload }){
+      return { ...state, roleList: payload };
     }
   },
 };
