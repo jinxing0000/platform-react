@@ -19,6 +19,7 @@ export default {
   effects: {
     // 获取角色list
     *getRoleList({ payload }, { call, put }) {
+        debugger;
         const result = yield call(getRoleList, payload);
         yield put({
             type: 'updateRoleList',

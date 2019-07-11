@@ -13,14 +13,6 @@ export default class RoleAddOrUpdate extends Component {
   };
   componentDidMount() {
     const { record, dispatch , role: {roleInfo }} = this.props;
-    // dispatch({
-    //   type: 'role/findMenuListById',
-    //   payload: record.roleId,
-    // }).then(menuIdList => {
-    //   if (menuIdList) {
-    //     this.onTreeCheck(menuIdList);
-    //   }
-    // });
     dispatch({
       type: 'menu/getMenuTreeList',
     });

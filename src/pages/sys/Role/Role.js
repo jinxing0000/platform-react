@@ -1,10 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal,message } from 'antd';
+import { Row, Col,Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal,message,Input } from 'antd';
 import StandardTable from '../../../components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './Role.less';
 import RoleAddOrUpdate from './RoleAddOrUpdate';
+const { Item: FormItem } = Form;
+const { confirm } = Modal;
 
 
 
@@ -18,25 +20,54 @@ import RoleAddOrUpdate from './RoleAddOrUpdate';
 @Form.create()
 class Role extends PureComponent {
 
-  state = {
-    formValues: {},
-    edit:false,
-    params:{page:1,limit:10}
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedRows: [],
+      params: {page:1,limit:10},
+    };
+  }
 
   //页面初始化加载
   componentDidMount() {
-    const { dispatch } = this.props;
-    this.handleSearch(this.state.params);
+    this.getRoleList(this.state.params);
   }
-
-   //查询角色list
-   handleSearch(params) {
-    const { dispatch, form } = this.props;
+  //获取角色list数据
+  getRoleList(params){
+    const { dispatch } = this.props;
     dispatch({
       type: 'role/getRoleList',
       payload: params,
     });
+  } 
+   //查询角色list
+  handleSearch= e => {
+    e.preventDefault();
+    const { dispatch, form } = this.props;
+    const { params } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const values = {
+        ...fieldsValue,
+        page: params.page,
+        limit: params.limit,
+      };
+      this.setState({
+        params: values,
+      });
+      this.getRoleList(values);
+    });
+  };
+  //重置查询条件
+  handleFormReset = () => {
+    const { form, dispatch } = this.props;
+    const { params } = this.state;
+    form.resetFields();
+    let searchParams = {page:params.page,limit:params.limit}
+    this.setState({
+      params: searchParams,
+    });
+    this.getRoleList(searchParams);
   };
   //新增修改部门
   handleSaveRoleInfo = (fields,callback) => {
@@ -57,40 +88,70 @@ class Role extends PureComponent {
     })
     .then(() => {
       callback('ok');
-      this.handleSearch(this.state.params);
+      this.getRoleList(this.state.params);
     });
   };
   //删除部门
-  deleteRoleByIds(id){
+  deleteRoleByIds(ids){
     const { dispatch } = this.props;
     dispatch({
       type: "role/deleteRoleByIds",
-      payload: id,
+      payload: ids,
     })
     .then(() => {
-      this.handleSearch(this.state.params);
+      this.getRoleList(this.state.params);
     });
   }
+  //批量删除角色信息
+  batchDeleteRole(){
+    const {selectedRows} = this.state;
+    if(selectedRows.length===0){
+      message.error("请选择角色！！", 10);
+       return ;
+    }
+    let ids=new Array();
+    for(var i=0;i<selectedRows.length;i++){
+      ids[i]=selectedRows[i].roleId;
+    }
+    let rolePage=this;
+    confirm({
+      title: '您确定要删除所选角色?',
+      okText: '删除',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        rolePage.deleteRoleByIds(ids);
+      },
+      onCancel() {
+          
+      },
+    });
+  }
+
+
 
   // 翻页
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const { params } = this.state;
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
-    const params = {
+    const searchParams = {
+      ...params,
+      ...filters,
       page: pagination.current,
       limit: pagination.pageSize,
-      ...formValues,
-      ...filters,
     };
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+      searchParams.sorter = `${sorter.field}_${sorter.order}`;
     }
-    this.handleSearch(params);
+    this.setState({
+      params: searchParams,
+    });
+    this.getRoleList(searchParams);
   };
 
 
@@ -102,8 +163,8 @@ class Role extends PureComponent {
       payload: id,
     }).then(() => {
       window.modal.current.getWrappedInstance().alertModal({
-        title: '编辑部门',
-        loading: 'dept/editDeptInfo',
+        title: '编辑角色',
+        loading: 'role/editRoleInfo',
         btnSubTitle: '修改',
         component: DeptAddOrUpdate,
         deptTreeList,
@@ -112,6 +173,12 @@ class Role extends PureComponent {
       });
     });
   }
+
+  handleSelectRows = rows => {
+    this.setState({
+      selectedRows: rows,
+    });
+  };
 
    closeModal=()=>{
      this.setState({
@@ -123,6 +190,40 @@ class Role extends PureComponent {
        edit:true
      })
    }
+
+   
+   renderSimpleForm() {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    const {params }= this.state; 
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={6} sm={24}>
+            <FormItem label="角色名称">
+              {getFieldDecorator('roleName',{initialValue: params.roleName,})(<Input placeholder="请输入角色名称" />)}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem label="角色编码">
+              {getFieldDecorator('roleCode',{initialValue: params.roleCode})(<Input placeholder="请输入角色编码" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                重置
+              </Button>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  } 
   render() {
     const {
       role: { roleList,deptInfo },
@@ -208,6 +309,7 @@ class Role extends PureComponent {
       // <PageHeaderWrapper title="部门管理">
       <Card bordered={false}>
         <div className={styles.tableList}>
+        <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
           <div className={styles.tableListOperator}>
             <Button
               icon="plus"
@@ -225,12 +327,21 @@ class Role extends PureComponent {
             >
               新增
             </Button>
+            <Button
+              icon="delete"
+              type="danger"
+              onClick={() => {
+                  this.batchDeleteRole();
+              }}
+            >
+              批量删除
+            </Button>
           </div>
           <StandardTable
             rowKey="roleId"
             defaultExpandAllRows
             loading={getRoleListLoading||saveRoleLoading||editRoleLoading||deleteRoleByIdsLoading}
-            selectedRows={false}
+            selectedRows={true}
             data={roleList}
             columns={columns}
             onSelectRow={this.handleSelectRows}
@@ -241,7 +352,7 @@ class Role extends PureComponent {
       // <Modal visible={edit} onCancel={this.closeModal} onOk={this.onOk} component={DeptAddOrUpdate} >
           
       // </Modal>
-    //</PageHeaderWrapper>
+      // </PageHeaderWrapper>
     );
   }
 }
