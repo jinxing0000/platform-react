@@ -357,7 +357,7 @@ export default [
           {
             path: '/system/job',
             name: '定时任务',
-            component: './Forms/BasicForm',
+            component: './Sys/Job/Job',
           },
           {
             path: '/system/log',

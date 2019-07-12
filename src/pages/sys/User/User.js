@@ -15,7 +15,7 @@ const { confirm } = Modal;
   getUserListLoading: loading.effects['user/getUserList'],
   saveUserLoading: loading.effects['user/saveUserInfo'],
   editUserLoading: loading.effects['user/editUserInfo'],
-  deleteUserByIdsLoading: loading.effects['role/deleteUserByIds'],
+  deleteUserByIdsLoading: loading.effects['user/deleteUserByIds'],
 }))
 @Form.create()
 class User extends PureComponent {
