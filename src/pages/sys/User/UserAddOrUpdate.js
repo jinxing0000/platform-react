@@ -7,7 +7,7 @@ const { TreeNode } = Tree;
 const { Item: FormItem } = Form;
 const Option = Select.Option;
 @Form.create()
-@connect(({ role,menu,dept }) => ({ role,menu,dept }))
+@connect(({ role,menu,dept,user }) => ({ role,menu,dept,user }))
 export default class UserAddOrUpdate extends Component {
   state = {
     checkedKeys: [],
@@ -21,13 +21,10 @@ export default class UserAddOrUpdate extends Component {
       type: 'role/getRoleList',
     });
     if(record.userId!=null){
-    //   dispatch({
-    //     type: 'role/getRoleInfoById',
-    //     payload: record.roleId,
-    //   })
-    //   .then(menuIdList => {
-    //     this.onTreeCheck(menuIdList);
-    //     });
+      dispatch({
+        type: 'user/getUserInfoById',
+        payload: record.userId,
+      })
     }
   }
   onTreeCheck = (checkedKeys,record) => {
@@ -67,7 +64,8 @@ export default class UserAddOrUpdate extends Component {
     }
   };
   render() {
-    const { form, record, role: { roleList },dept: {deptTreeList}} = this.props;
+    const { form, record, role: { roleList },dept: {deptTreeList} ,user:{userInfo}} = this.props;
+    debugger;
     return (
           <Form onSubmit={this.okHandler}>
             {form.getFieldDecorator('userId', {
@@ -114,7 +112,7 @@ export default class UserAddOrUpdate extends Component {
             <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色">
                 {form.getFieldDecorator('roleIdList', {
                 rules: [{ required: true, message: '请输入角色' }],
-                initialValue: record.roleIdList ? record.roleIdList : [],
+                initialValue: userInfo.roleIdList ? userInfo.roleIdList : [],
                 })(
                 <Select mode="multiple" style={{ width: '100%' }}>
                     {roleList.list.map(item => (
@@ -131,10 +129,10 @@ export default class UserAddOrUpdate extends Component {
                 initialValue: record.status ? record.status : null,
                 })(
                 <Select style={{ width: '100%' }}>
-                    <Select.Option key="00" value="00">
+                    <Select.Option key="01" value="01">
                     正常
                     </Select.Option>
-                    <Select.Option key="01" value="01">
+                    <Select.Option key="00" value="00">
                     禁用
                     </Select.Option>
                 </Select>

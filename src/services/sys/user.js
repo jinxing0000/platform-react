@@ -40,6 +40,6 @@ export async function deleteUserByIds(params) {
       data: params,
     });
 }
-export async function getUserInfoById(roleId) {
-  return request(`/api/sys/user/info?roleId=${roleId}`);
+export async function getUserInfoById(userId) {
+  return request(`/api/sys/user/info?userId=${userId}`);
 }

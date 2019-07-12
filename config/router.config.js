@@ -362,7 +362,7 @@ export default [
           {
             path: '/system/log',
             name: '系统日志',
-            component: './Forms/BasicForm',
+            component: './Sys/Log/Log',
           },
         ],
       },

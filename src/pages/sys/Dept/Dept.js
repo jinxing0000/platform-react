@@ -195,7 +195,7 @@ class Dept extends PureComponent {
           </div>
           <StandardTable
             rowKey="deptId"
-            defaultExpandAllRows
+            defaultExpandAllRows={false}
             loading={getDeptTreeListLoading||saveDeptLoading||editDeptLoading||deleteDeptByIdLoading}
             selectedRows={false}
             data={deptTreeList}

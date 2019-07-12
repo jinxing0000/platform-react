@@ -179,7 +179,7 @@ class Menu extends PureComponent {
           </div>
           <StandardTable
             rowKey="menuId"
-            defaultExpandAllRows
+            defaultExpandAllRows={false}
             loading={getMenuTreeListLoading||saveMenuLoading||editMenuLoading||deleteMenuByIdLoading}
             selectedRows={false}
             data={menuTreeList}

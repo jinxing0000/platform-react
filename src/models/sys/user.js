@@ -76,13 +76,19 @@ export default {
     const result = yield call(deleteUserByIds, payload);
     message.success("删除用户成功！！", 10);
   },
-  *getRoleInfoById({ payload }, { call, put }){
-      const result = yield call(getRoleInfoById, payload);
+  *getUserInfoById({ payload }, { call, put }){
+      const result = yield call(getUserInfoById, payload);
+      const userInfo=result.data;
+      const roleList=userInfo.roleIdList;
+      let roleIdList=new Array();
+      for(let i=0;i<roleList.length;i++){
+        roleIdList[i]=roleList[i].roleId;
+      }
+      userInfo.roleIdList=roleIdList;
       yield put({
-          type: 'setRoleInfo',
-          payload: result.data
+          type: 'setUserInfo',
+          payload: userInfo
       });
-      return result.data.menuIdList;
   }
   },
 
@@ -112,8 +118,8 @@ export default {
     updateUserList(state, { payload }) {
       return { ...state, userList: payload };
     },
-    setRoleInfo(state, { payload }){
-      return { ...state, userInfo: payload };
+    setUserInfo(state, { payload }){
+      return { ...state, userInfo: payload?payload:{}};
     }
   },
 };

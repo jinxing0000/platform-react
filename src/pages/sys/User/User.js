@@ -170,7 +170,12 @@ class User extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
             <FormItem label="用户名">
-              {getFieldDecorator('userName',{initialValue: params.userName,})(<Input placeholder="请输入用户名" />)}
+              {getFieldDecorator('username',{initialValue: params.userName,})(<Input placeholder="请输入用户名" />)}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem label="昵称">
+              {getFieldDecorator('nickName',{initialValue: params.nickName,})(<Input placeholder="请输入昵称" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -228,6 +233,18 @@ class User extends PureComponent {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
+        render: record => {
+          switch (record) {
+            case '00':
+              return <span>禁用</span>;
+              break;
+            case '01':
+              return <span>正常</span>;
+              break;
+            default:
+              break;
+          }
+        },
     },
       {
         title: '操作',
