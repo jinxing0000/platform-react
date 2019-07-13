@@ -351,13 +351,24 @@ export default [
           },
           {
             path: '/list/table-list',
-            name: 'sql',
+            name: 'sql监控',
             component: './Forms/BasicForm',
           },
           {
             path: '/system/job',
             name: '定时任务',
-            component: './Sys/Job/Job',
+            routes:[
+              {
+                path: '/system/job/jobList',
+                name: '定时任务',
+                component: './Sys/Job/Job',
+              },
+              {
+                path: '/system/job/jobLogList',
+                name: '定时任务日志',
+                component: './Sys/Job/JobLog',
+              },
+            ]
           },
           {
             path: '/system/log',

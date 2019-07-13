@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col,Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal,message,Input } from 'antd';
+import { routerRedux } from 'dva/router';
 import StandardTable from '../../../components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './Job.less';
@@ -286,6 +287,16 @@ class Job extends PureComponent {
     });
   }
 
+  goJobLogList(record){
+    debugger;
+    this.props.dispatch(routerRedux.push({ 
+      pathname: '/system/job/jobLogList',
+      params: {
+        jobId:record.jobId
+      }
+    }))
+  }
+
 
   render() {
     const {
@@ -385,6 +396,7 @@ class Job extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
+            <Button type="link" onClick={()=>this.goJobLogList(record)}>查看日志</Button>
            
           </Fragment>
       
