@@ -20,32 +20,51 @@ export default {
     // 获取部门list
     *getDeptTreeList({ payload }, { call, put }) {
         const result = yield call(getDeptTreeList, payload);
-        yield put({
+        if(result.code===0){
+          yield put({
             type: 'updateDeptTreeList',
             payload: {
               list: result.data,
               pagination: { current: 1, total: 3, pageSize: 10 },
             },
-        });
+          });
+        }else {
+          message.success(result.msg);
+        }
     },
     *saveDeptInfo({ payload }, { call, put }){
       const parentId=payload.parentId;
-      if(parentId==null){
-        payload.parentId="0";
-      }
-      const result = yield call(saveDeptInfo, payload);
-      message.success("新增部门成功！！", 10);
+        if(parentId==null){
+          payload.parentId="0";
+        }
+        const result = yield call(saveDeptInfo, payload);
+        if(result.code===0){
+          message.success('新增成功！！');
+        }else{
+          message.error(result.msg);
+        }
+        return result;
     },
     *editDeptInfo({ payload }, { call, put }){
       if(payload.parentId==='根部门'){
         payload.parentId="0";
       }
       const result = yield call(editDeptInfo, payload);
-      message.success("修改部门成功！！", 10);
+      if(result.code===0){
+        message.success('修改成功！！');
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *deleteDeptById({ payload }, { call, put }){
       const result = yield call(deleteDeptById, payload);
-      message.success("删除部门成功！！", 10);
+      if(result.code===0){
+        message.success('删除成功！！');
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *getDeptInfoById({ payload }, { call, put }){
       const result = yield call(getDeptInfoById, payload);

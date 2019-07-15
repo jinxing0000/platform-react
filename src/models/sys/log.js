@@ -19,13 +19,17 @@ export default {
     // 获取日志list
     *getLogList({ payload }, { call, put }) {
       const result = yield call(getLogList, payload);
-      yield put({
+      if(result.code===0){
+        yield put({
           type: 'updateLogList',
           payload: {
             list: result.data.list,
             pagination: { current: result.data.currPage, total: result.data.totalCount, pageSize: result.data.pageSize },
           },
       });
+      }else{
+        message.error(result.msg);
+      }
     },
   },
 

@@ -131,13 +131,17 @@ export default {
     },
     *getMenuTreeList({ payload }, { call,put }){
       const result = yield call(getMenuTreeList, payload);
-      yield put({
-        type: 'updateMenuTreeList',
-        payload: {
-          list: result,
-          pagination: { current: 1, total: 3, pageSize: 10 },
-        },
-      });
+      if(result.code===0){
+        yield put({
+          type: 'updateMenuTreeList',
+          payload: {
+            list: result,
+            pagination: { current: 1, total: 3, pageSize: 10 },
+          },
+        });
+      }else{
+        message.error(result.msg);
+      }
     },
     *saveMenuInfo({ payload }, { call, put }){
       const parentId=payload.parentId;
@@ -145,18 +149,33 @@ export default {
         payload.parentId="0";
       }
       const result = yield call(saveMenuInfo, payload);
-      message.success("新增菜单成功！！", 10);
+      if(result.code===0){
+        message.success("新增成功！！");
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *editMenuInfo({ payload }, { call, put }){
       if(payload.parentId==='根目录'){
         payload.parentId="0";
       }
       const result = yield call(editMenuInfo, payload);
-      message.success("修改菜单成功！！", 10);
+      if(result.code===0){
+        message.success("修改成功！！");
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *deleteMenuById({ payload }, { call, put }){
       const result = yield call(deleteMenuById, payload);
-      message.success("删除菜单成功！！", 10);
+      if(result.code===0){
+        message.success("删除成功！！");
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
   },
 

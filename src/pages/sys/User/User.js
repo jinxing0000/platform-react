@@ -87,9 +87,11 @@ class User extends PureComponent {
       type: url,
       payload: fields,
     })
-    .then(() => {
-      callback('ok');
-      this.getUserList(this.state.params);
+    .then(({code}) => {
+      if(code===0){
+        callback('ok');
+        this.getUserList(this.state.params);
+      }
     });
   };
   //删除用户
@@ -99,8 +101,10 @@ class User extends PureComponent {
       type: "user/deleteUserByIds",
       payload: ids,
     })
-    .then(() => {
-      this.getUserList(this.state.params);
+    .then(({code}) => {
+      if(code===0){
+        this.getUserList(this.state.params);
+      }
     });
   }
   //批量删除用户信息

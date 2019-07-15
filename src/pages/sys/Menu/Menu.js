@@ -53,9 +53,11 @@ class Menu extends PureComponent {
       type: url,
       payload: fields,
     })
-    .then(() => {
-      callback('ok');
-      this.handleSearch();
+    .then(({code}) => {
+      if(code===0){
+        callback('ok');
+        this.handleSearch();
+      }
     });
   };
   //删除部门
@@ -65,8 +67,10 @@ class Menu extends PureComponent {
       type: "menu/deleteMenuById",
       payload: id,
     })
-    .then(() => {
-      this.handleSearch();
+    .then(({code}) => {
+      if(code===0){
+        this.handleSearch();
+      }
     });
   }
   render() {

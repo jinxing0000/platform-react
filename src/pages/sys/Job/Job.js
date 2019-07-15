@@ -36,7 +36,7 @@ class Job extends PureComponent {
   componentDidMount() {
     this.getJobList(this.state.params);
   }
-  //获取用户list数据
+  //获取定时任务list数据
   getJobList(params){
     const { dispatch } = this.props;
     dispatch({
@@ -73,7 +73,7 @@ class Job extends PureComponent {
     });
     this.getJobList(searchParams);
   };
-  //新增修改用户信息
+  //新增修改定时任务信息
   handleSaveJobInfo = (fields,callback) => {
     const { dispatch } = this.props;
     const jobId=fields.jobId;
@@ -90,9 +90,11 @@ class Job extends PureComponent {
       type: url,
       payload: fields,
     })
-    .then(() => {
-      callback('ok');
-      this.getJobList(this.state.params);
+    .then(({code}) => {
+      if(code===0){
+        callback('ok');
+        this.getJobList(this.state.params);
+      }
     });
   };
   //删除定时任务
@@ -102,8 +104,10 @@ class Job extends PureComponent {
       type: "job/deleteJobByIds",
       payload: ids,
     })
-    .then(() => {
-      this.getJobList(this.state.params);
+    .then(({code}) => {
+      if(code===0){
+        this.getJobList(this.state.params);
+      }
     });
   }
   //批量删除定时任务信息
@@ -213,8 +217,10 @@ class Job extends PureComponent {
             type: "job/runJobByIds",
             payload: ids,
         })
-        .then(() => {
+        .then(({code}) => {
+          if(code===0){
             userPage.getJobList(userPage.state.params);
+          }
         });
       },
       onCancel() {
@@ -245,8 +251,10 @@ class Job extends PureComponent {
             type: "job/pauseJobByIds",
             payload: ids,
           })
-          .then(() => {
-            userPage.getJobList(userPage.state.params);
+          .then(({code}) => {
+            if(code===0){
+              userPage.getJobList(userPage.state.params);
+            }
           });
       },
       onCancel() {
@@ -277,8 +285,10 @@ class Job extends PureComponent {
             type: "job/resumeJobByIds",
             payload: ids,
           })
-          .then(() => {
-            userPage.getJobList(userPage.state.params);
+          .then(({code}) => {
+            if(code===0){
+              userPage.getJobList(userPage.state.params);
+            }
           });
       },
       onCancel() {
@@ -288,7 +298,6 @@ class Job extends PureComponent {
   }
 
   goJobLogList(record){
-    debugger;
     this.props.dispatch(routerRedux.push({ 
       pathname: '/system/job/jobLogList',
       params: {

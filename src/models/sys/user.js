@@ -37,13 +37,17 @@ export default {
     // 获取用户list
     *getUserList({ payload }, { call, put }) {
       const result = yield call(getUserList, payload);
-      yield put({
+      if(result.code===0){
+        yield put({
           type: 'updateUserList',
           payload: {
             list: result.data.list,
             pagination: { current: result.data.currPage, total: result.data.totalCount, pageSize: result.data.pageSize },
           },
-      });
+        });
+      }else{
+        message.error(result.msg);
+      }
   },
   //新增用户信息
   *saveUserInfo({ payload }, { call, put }){
@@ -57,7 +61,12 @@ export default {
     }
     payload.roleIdList=roleList;
     const result = yield call(saveUserInfo, payload);
-    message.success("新增用户成功！！", 10);
+    if(result.code===0){
+      message.success("新增用户！！");
+    }else{
+      message.error(result.msg);
+    }
+    return result;
   },
   *editUserInfo({ payload }, { call, put }){
     let roleIdList=payload.roleIdList;
@@ -70,25 +79,39 @@ export default {
     }
     payload.roleIdList=roleList;
     const result = yield call(editUserInfo, payload);
-    message.success("修改用户成功！！", 10);
+    if(result.code===0){
+      message.success("修改成功！！");
+    }else{
+      message.error(result.msg);
+    }
+    return result;
   },
   *deleteUserByIds({ payload }, { call, put }){
     const result = yield call(deleteUserByIds, payload);
-    message.success("删除用户成功！！", 10);
+    if(result.code===0){
+      message.success("删除成功！！");
+    }else{
+      message.error(result.msg);
+    }
+    return result;
   },
   *getUserInfoById({ payload }, { call, put }){
       const result = yield call(getUserInfoById, payload);
-      const userInfo=result.data;
-      const roleList=userInfo.roleIdList;
-      let roleIdList=new Array();
-      for(let i=0;i<roleList.length;i++){
-        roleIdList[i]=roleList[i].roleId;
+      if(result.code===0){
+        const userInfo=result.data;
+        const roleList=userInfo.roleIdList;
+        let roleIdList=new Array();
+        for(let i=0;i<roleList.length;i++){
+          roleIdList[i]=roleList[i].roleId;
+        }
+        userInfo.roleIdList=roleIdList;
+        yield put({
+            type: 'setUserInfo',
+            payload: userInfo
+        });
+      }else{
+        message.error(result.msg);
       }
-      userInfo.roleIdList=roleIdList;
-      yield put({
-          type: 'setUserInfo',
-          payload: userInfo
-      });
   }
   },
 

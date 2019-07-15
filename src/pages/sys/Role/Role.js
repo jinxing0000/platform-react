@@ -86,10 +86,11 @@ class Role extends PureComponent {
       type: url,
       payload: fields,
     })
-    .then(() => {
-      debugger;
-      callback('ok');
-      this.getRoleList(this.state.params);
+    .then(({code}) => {
+      if(code===0){
+        callback('ok');
+        this.getRoleList(this.state.params);
+      }
     });
   };
   //删除部门
@@ -99,8 +100,10 @@ class Role extends PureComponent {
       type: "role/deleteRoleByIds",
       payload: ids,
     })
-    .then(() => {
-      this.getRoleList(this.state.params);
+    .then(({code}) => {
+      if(code===0){
+        this.getRoleList(this.state.params);
+      }
     });
   }
   //批量删除角色信息
@@ -180,18 +183,6 @@ class Role extends PureComponent {
       selectedRows: rows,
     });
   };
-
-   closeModal=()=>{
-     this.setState({
-       edit:false
-     })
-   }
-   onOK=()=>{
-     this.setState({
-       edit:true
-     })
-   }
-
    
    renderSimpleForm() {
     const {
@@ -307,7 +298,6 @@ class Role extends PureComponent {
     ];
 
     return (
-      // <PageHeaderWrapper title="部门管理">
       <Card bordered={false}>
         <div className={styles.tableList}>
         <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
@@ -350,10 +340,6 @@ class Role extends PureComponent {
           />
         </div>
       </Card>
-      // <Modal visible={edit} onCancel={this.closeModal} onOk={this.onOk} component={DeptAddOrUpdate} >
-          
-      // </Modal>
-      // </PageHeaderWrapper>
     );
   }
 }

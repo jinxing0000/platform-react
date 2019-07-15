@@ -19,8 +19,6 @@ import DeptAddOrUpdate from './DeptAddOrUpdate';
 class Dept extends PureComponent {
 
   state = {
-    formValues: {},
-    edit:false
   };
 
   //页面初始化加载
@@ -53,8 +51,11 @@ class Dept extends PureComponent {
       type: url,
       payload: fields,
     })
-    .then(() => {
-      callback('ok');
+    .then(({code}) => {
+      if(code===0){
+        callback('ok');
+        this.handleSearch();
+      }
     });
   };
   //删除部门
@@ -64,39 +65,13 @@ class Dept extends PureComponent {
       type: "dept/deleteDeptById",
       payload: id,
     })
-    .then(() => {
-      this.handleSearch();
-    });
-  }
-  //按照id获取部门数据
-  getDeptInfoById(id){
-    const { dispatch,deptTreeList,deptInfo } = this.props;
-    dispatch({
-      type: "dept/getDeptInfoById",
-      payload: id,
-    }).then(() => {
-      window.modal.current.getWrappedInstance().alertModal({
-        title: '编辑部门',
-        loading: 'dept/editDeptInfo',
-        btnSubTitle: '修改',
-        component: DeptAddOrUpdate,
-        deptTreeList,
-        deptInfo,
-        apply: this.handleAdd,
-      });
+    .then(({code}) => {
+      if(code===0){
+        this.handleSearch();
+      }
     });
   }
 
-   closeModal=()=>{
-     this.setState({
-       edit:false
-     })
-   }
-   onOK=()=>{
-     this.setState({
-       edit:true
-     })
-   }
   render() {
     const {
       dept: { deptTreeList,deptInfo },
@@ -170,7 +145,6 @@ class Dept extends PureComponent {
     ];
 
     return (
-      // <PageHeaderWrapper title="部门管理">
       <Card bordered={false}>
         <div className={styles.tableList}>
           <div className={styles.tableListOperator}>
@@ -206,10 +180,6 @@ class Dept extends PureComponent {
           />
         </div>
       </Card>
-      // <Modal visible={edit} onCancel={this.closeModal} onOk={this.onOk} component={DeptAddOrUpdate} >
-          
-      // </Modal>
-    //</PageHeaderWrapper>
     );
   }
 }

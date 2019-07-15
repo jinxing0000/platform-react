@@ -19,15 +19,18 @@ export default {
   effects: {
     // 获取角色list
     *getRolePageList({ payload }, { call, put }) {
-        debugger;
         const result = yield call(getRoleList, payload);
-        yield put({
+        if(result.code===0){
+          yield put({
             type: 'updateRoleList',
             payload: {
               list: result.data.list,
               pagination: { current: result.data.currPage, total: result.data.totalCount, pageSize: result.data.pageSize },
             },
-        });
+          });
+        }else{
+          message.error(result.msg);
+        }
     },
     *saveRoleInfo({ payload }, { call, put }){
       const parentId=payload.parentId;
@@ -35,31 +38,50 @@ export default {
         payload.parentId="0";
       }
       const result = yield call(saveRoleInfo, payload);
-      message.success("新增角色成功！！", 10);
+      if(result.code===0){
+        message.success("新增成功！！");
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *editRoleInfo({ payload }, { call, put }){
       const result = yield call(editRoleInfo, payload);
-      message.success("修改角色成功！！", 10);
+      if(result.code===0){
+        message.success("修改成功！！");
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *deleteRoleByIds({ payload }, { call, put }){
       const result = yield call(deleteRoleByIds, payload);
-      message.success("删除角色成功！！", 10);
+      if(result.code===0){
+        message.success("删除成功！！");
+      }else{
+        message.error(result.msg);
+      }
+      return result;
     },
     *getRoleInfoById({ payload }, { call, put }){
         const result = yield call(getRoleInfoById, payload);
-        yield put({
+        if(result.code===0){
+          yield put({
             type: 'setRoleInfo',
             payload: result.data
-        });
-        return result.data.menuIdList;
+          });
+          return result.data.menuIdList;
+        }
     },
     //角色列表                          
     *getRoleList({ payload }, { call, put }){
       const result = yield call(getRoleList, payload);
-      yield put({
-        type: 'setRoleList',
-        payload: result.data
-      });
+      if(result.code===0){
+        yield put({
+          type: 'setRoleList',
+          payload: result.data
+        });
+      }
     }
   },
 
