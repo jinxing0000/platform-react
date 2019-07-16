@@ -29,7 +29,7 @@ export default {
             },
           });
         }else {
-          message.success(result.msg);
+          message.error(result.msg);
         }
     },
     *saveDeptInfo({ payload }, { call, put }){

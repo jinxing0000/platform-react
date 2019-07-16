@@ -23,17 +23,15 @@ export default class RoleAddOrUpdate extends Component {
       })
       .then(menuIdList => {
         this.onTreeCheck(menuIdList);
-        });
+      });
     }
   }
-  onTreeCheck = (checkedKeys,record) => {
+  onTreeCheck = (checkedKeys) => {
     if (checkedKeys) {
       if (!Array.isArray(checkedKeys)) {
         const { checked } = checkedKeys;
-        // record.selectMenuIdListLength=checked.length;
         this.setState({ checkedKeys: checked });
       } else {
-        // record.selectMenuIdListLength=checkedKeys.length;
         this.setState({ checkedKeys: checkedKeys});
       }
     }
@@ -94,10 +92,9 @@ export default class RoleAddOrUpdate extends Component {
             </FormItem>
             <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="选择菜单">
             {form.getFieldDecorator('menuIdList', {
-                rules: [{ required: false, message: '选择菜单' }],
+                rules: [{ required: true, message: '选择菜单' }],
                 initialValue: this.state.checkedKeys,
-              })(<Input placeholder="请选择菜单" type="hidden"/>)}
-              <Tree
+              })(<Tree
                 showLine
                 checkable
                 checkStrictly={true}
@@ -105,7 +102,7 @@ export default class RoleAddOrUpdate extends Component {
                 onCheck={this.onTreeCheck}
                 >
                 {this.renderTreeNodes(menuTreeList.list)}
-              </Tree>
+              </Tree>)}
             </FormItem>
           </Form>
     );

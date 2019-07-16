@@ -135,7 +135,7 @@ export default {
         yield put({
           type: 'updateMenuTreeList',
           payload: {
-            list: result,
+            list: result.data,
             pagination: { current: 1, total: 3, pageSize: 10 },
           },
         });
