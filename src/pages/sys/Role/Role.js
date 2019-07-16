@@ -10,8 +10,9 @@ const { confirm } = Modal;
 
 
 
-@connect(({ role, loading }) => ({
+@connect(({ role, loading,user }) => ({
   role,
+  user,
   getRoleListLoading: loading.effects['role/getRoleList'],
   saveRoleLoading: loading.effects['role/saveRoleInfo'],
   editRoleLoading: loading.effects['role/editRoleInfo'],
@@ -219,6 +220,7 @@ class Role extends PureComponent {
   render() {
     const {
       role: { roleList,deptInfo },
+      user:{ currentUser },
       getRoleListLoading,
       saveRoleLoading,
       editRoleLoading,
@@ -253,10 +255,7 @@ class Role extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            {/*<Tooltip placement="bottom" title="查看">*/}
-            {/*<Icon type="eye-o" style={{ fontSize: '15px' }} />*/}
-            {/*</Tooltip>*/}
-            {/*<Divider type="vertical" />*/}
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:role:update') &&
             <Tooltip placement="bottom" title="编辑">
               <Icon
                 type="edit"
@@ -273,7 +272,11 @@ class Role extends PureComponent {
                 }}
               />
             </Tooltip>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:role:update') &&
             <Divider type="vertical" />
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:role:delete') &&
             <Popconfirm
               title="确认删除这个角色吗？"
               okText="删除"
@@ -290,9 +293,8 @@ class Role extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
-           
+            }
           </Fragment>
-      
         ),
       },
     ];
@@ -302,6 +304,7 @@ class Role extends PureComponent {
         <div className={styles.tableList}>
         <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
           <div className={styles.tableListOperator}>
+          { currentUser.permsSet && currentUser.permsSet.includes('sys:role:save') &&
             <Button
               icon="plus"
               type="primary"
@@ -318,6 +321,8 @@ class Role extends PureComponent {
             >
               新增
             </Button>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:role:delete') &&
             <Button
               icon="delete"
               type="danger"
@@ -327,6 +332,7 @@ class Role extends PureComponent {
             >
               批量删除
             </Button>
+            }
           </div>
           <StandardTable
             rowKey="roleId"

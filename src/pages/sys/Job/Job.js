@@ -11,8 +11,9 @@ const { confirm } = Modal;
 
 
 
-@connect(({ job, loading }) => ({
+@connect(({ job, loading,user }) => ({
   job,
+  user,
   getJobListLoading: loading.effects['job/getJobList'],
   saveJobLoading: loading.effects['job/saveJobInfo'],
   editJobLoading: loading.effects['job/editJobInfo'],
@@ -309,6 +310,7 @@ class Job extends PureComponent {
 
   render() {
     const {
+      user:{ currentUser },
       job: { jobList},
       getJobListLoading,
       saveJobLoading,
@@ -368,10 +370,7 @@ class Job extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            {/*<Tooltip placement="bottom" title="查看">*/}
-            {/*<Icon type="eye-o" style={{ fontSize: '15px' }} />*/}
-            {/*</Tooltip>*/}
-            {/*<Divider type="vertical" />*/}
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:update') &&
             <Tooltip placement="bottom" title="编辑">
               <Icon
                 type="edit"
@@ -388,7 +387,11 @@ class Job extends PureComponent {
                 }}
               />
             </Tooltip>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:update') &&
             <Divider type="vertical" />
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') &&
             <Popconfirm
               title="确认删除这个定时任务吗？"
               okText="删除"
@@ -405,8 +408,11 @@ class Job extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') &&
+            <Divider type="vertical" />
+            }
             <Button type="link" onClick={()=>this.goJobLogList(record)}>查看日志</Button>
-           
           </Fragment>
       
         ),
@@ -418,6 +424,7 @@ class Job extends PureComponent {
         <div className={styles.tableList}>
         <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
           <div className={styles.tableListOperator}>
+          { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:save') &&
             <Button
               icon="plus"
               type="primary"
@@ -434,6 +441,8 @@ class Job extends PureComponent {
             >
               新增
             </Button>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') &&
             <Button
               icon="delete"
               type="danger"
@@ -443,6 +452,8 @@ class Job extends PureComponent {
             >
               批量删除
             </Button>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:run') &&
             <Button
               type="primary"
               onClick={() => {
@@ -451,6 +462,8 @@ class Job extends PureComponent {
             >
               执行任务
             </Button>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:pause') &&
             <Button
               type="primary"
               onClick={() => {
@@ -459,6 +472,8 @@ class Job extends PureComponent {
             >
               暂停任务
             </Button>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:resume') &&
             <Button
               type="primary"
               onClick={() => {
@@ -467,6 +482,7 @@ class Job extends PureComponent {
             >
               恢复任务
             </Button>
+            }
           </div>
           <StandardTable
             rowKey="jobId"

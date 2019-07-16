@@ -105,10 +105,7 @@ class Dept extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            {/*<Tooltip placement="bottom" title="查看">*/}
-            {/*<Icon type="eye-o" style={{ fontSize: '15px' }} />*/}
-            {/*</Tooltip>*/}
-            {/*<Divider type="vertical" />*/}
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:update') &&
             <Tooltip placement="bottom" title="编辑">
               <Icon
                 type="edit"
@@ -126,7 +123,11 @@ class Dept extends PureComponent {
                 }}
               />
             </Tooltip>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:update') &&
             <Divider type="vertical" />
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:delete') &&
             <Popconfirm
               title="确认删除这个部门？"
               okText="删除"
@@ -141,9 +142,8 @@ class Dept extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
-           
+            }
           </Fragment>
-      
         ),
       },
     ];

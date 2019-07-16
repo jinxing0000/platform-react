@@ -8,8 +8,9 @@ import MenuAddOrUpdate from './MenuAddOrUpdate';
 
 
 
-@connect(({ menu, loading }) => ({
+@connect(({ menu, loading,user }) => ({
   menu,
+  user,
   getMenuTreeListLoading: loading.effects['menu/getMenuTreeList'],
   saveMenuLoading: loading.effects['menu/saveMenuInfo'],
   editMenuLoading: loading.effects['menu/editMenuInfo'],
@@ -75,6 +76,7 @@ class Menu extends PureComponent {
   }
   render() {
     const {
+      user:{ currentUser },
       menu: { menuTreeList},
       getMenuTreeListLoading,
       saveMenuLoading,
@@ -116,10 +118,7 @@ class Menu extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            {/*<Tooltip placement="bottom" title="查看">*/}
-            {/*<Icon type="eye-o" style={{ fontSize: '15px' }} />*/}
-            {/*</Tooltip>*/}
-            {/*<Divider type="vertical" />*/}
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:menu:update') &&
             <Tooltip placement="bottom" title="编辑菜单">
               <Icon
                 type="edit"
@@ -137,7 +136,11 @@ class Menu extends PureComponent {
                 }}
               />
             </Tooltip>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:menu:update') &&
             <Divider type="vertical" />
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:menu:delete') &&
             <Popconfirm
               title="确认删除这个菜单？"
               okText="删除"
@@ -152,7 +155,7 @@ class Menu extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
-           
+            }
           </Fragment>
       
         ),
@@ -163,6 +166,7 @@ class Menu extends PureComponent {
       <Card bordered={false}>
         <div className={styles.tableList}>
           <div className={styles.tableListOperator}>
+          { currentUser.permsSet && currentUser.permsSet.includes('sys:menu:save') &&
             <Button
               icon="plus"
               type="primary"
@@ -180,6 +184,7 @@ class Menu extends PureComponent {
             >
                新增
             </Button>
+            }
           </div>
           <StandardTable
             rowKey="menuId"

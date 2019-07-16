@@ -198,7 +198,7 @@ class User extends PureComponent {
   } 
   render() {
     const {
-      user: { userList},
+      user: { userList,currentUser },
       getUserListLoading,
       saveUserLoading,
       editUserLoading,
@@ -254,10 +254,7 @@ class User extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            {/*<Tooltip placement="bottom" title="查看">*/}
-            {/*<Icon type="eye-o" style={{ fontSize: '15px' }} />*/}
-            {/*</Tooltip>*/}
-            {/*<Divider type="vertical" />*/}
+             { currentUser.permsSet && currentUser.permsSet.includes('sys:user:update') &&
             <Tooltip placement="bottom" title="编辑">
               <Icon
                 type="edit"
@@ -274,7 +271,11 @@ class User extends PureComponent {
                 }}
               />
             </Tooltip>
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:user:update') &&
             <Divider type="vertical" />
+            }
+            { currentUser.permsSet && currentUser.permsSet.includes('sys:user:delete') &&
             <Popconfirm
               title="确认删除这个用户吗？"
               okText="删除"
@@ -291,7 +292,7 @@ class User extends PureComponent {
                 </Tooltip>
               </a>
             </Popconfirm>
-           
+            }
           </Fragment>
       
         ),
@@ -303,6 +304,7 @@ class User extends PureComponent {
         <div className={styles.tableList}>
         <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
           <div className={styles.tableListOperator}>
+           { currentUser.permsSet && currentUser.permsSet.includes('sys:user:save') &&
             <Button
               icon="plus"
               type="primary"
@@ -319,6 +321,8 @@ class User extends PureComponent {
             >
               新增
             </Button>
+           }
+           { currentUser.permsSet && currentUser.permsSet.includes('sys:user:delete') &&
             <Button
               icon="delete"
               type="danger"
@@ -328,6 +332,7 @@ class User extends PureComponent {
             >
               批量删除
             </Button>
+           }
           </div>
           <StandardTable
             rowKey="userId"
