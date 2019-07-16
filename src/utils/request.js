@@ -89,7 +89,7 @@ request.interceptors.response.use(async (response) => {
   const data = await response.clone().json();
   //判断会话失效，重新登陆
   if(data.code===2||data.code===11){
-    message.error("您的登陆会话失效，请重新登陆！！", 10);
+    message.error("您的登陆会话失效，请重新登陆！！");
     // @HACK
     /* eslint-disable no-underscore-dangle */
     window.g_app._store.dispatch({

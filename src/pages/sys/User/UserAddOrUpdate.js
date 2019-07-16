@@ -71,12 +71,13 @@ export default class UserAddOrUpdate extends Component {
             {form.getFieldDecorator('userId', {
                 initialValue: record.userId ? record.userId : null,
             })(<Input type="hidden" />)}
+             {record.userId ? null : (
             <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="用户名">
                 {form.getFieldDecorator('username', {
                 rules: [{ required: true, message: '请输入用户名' }],
                 initialValue: record.username ? record.username : null,
                 })(<Input placeholder="请输入用户名" />)}
-            </FormItem>
+            </FormItem>)}
             <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属部门">
                 {form.getFieldDecorator('deptId', {
                 rules: [{ required: true, message: '请输入所属部门' }],
@@ -88,14 +89,14 @@ export default class UserAddOrUpdate extends Component {
                 {form.getFieldDecorator('password', {
                     rules: [{ required: true, message: '密码至少6位' }],
                     initialValue: record.password ? record.password : null,
-                })(<Input placeholder="请输入密码" />)}
+                })(<Input placeholder="请输入密码" type="password"/>)}
                 </FormItem>
             )}
-            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="真实姓名">
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="昵称">
                 {form.getFieldDecorator('nickName', {
-                rules: [{ required: true, message: '请输入真实姓名' }],
+                rules: [{ required: true, message: '请输入昵称' }],
                 initialValue: record.nickName ? record.nickName : null,
-                })(<Input placeholder="请输入真实姓名" />)}
+                })(<Input placeholder="请输入昵称" />)}
             </FormItem>
             <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="邮箱">
                 {form.getFieldDecorator('email', {

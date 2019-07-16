@@ -198,7 +198,7 @@ class User extends PureComponent {
   } 
   render() {
     const {
-      user: { userList,currentUser },
+      user: { userList,currentUser,userInfo },
       getUserListLoading,
       saveUserLoading,
       editUserLoading,
@@ -314,7 +314,7 @@ class User extends PureComponent {
                   btnSubTitle: '新增',
                   loading: 'user/saveUserInfo',
                   component: UserAddOrUpdate,
-                  record: {},
+                  record: {status:"01"},
                   apply: this.handleSaveUserInfo,
                 });
               }}
