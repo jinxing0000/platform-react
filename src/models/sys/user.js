@@ -28,11 +28,16 @@ export default {
     },
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
-      response.user.avatar="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png";
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response.user,
-      });
+      if(response.code===0){
+        response.data.avatar="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png";
+        yield put({
+          type: 'saveCurrentUser',
+          payload: response.data,
+        });
+      }else{
+        message.error(response.msg);
+      }
+      return response;
     },
     // 获取用户list
     *getUserList({ payload }, { call, put }) {

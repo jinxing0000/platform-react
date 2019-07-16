@@ -326,53 +326,43 @@ export default [
       { path: '/', redirect: '/system/user'},
       {
         path: '/system',
-        name: '系统管理',
         icon: 'dashboard',
         routes: [
           {
             path: '/system/user',
-            name: '用户管理',
             component: './Sys/User/User',
           },
           {
             path: '/system/dept',
-            name: '部门管理',
             component: './Sys/Dept/Dept',
           },
           {
             path: '/system/role',
-            name: '角色管理',
             component: './Sys/Role/Role',
           },
           {
             path: '/system/menu',
-            name: '菜单管理',
             component: './Sys/Menu/Menu',
           },
           {
             path: '/list/table-list',
-            name: 'sql监控',
             component: './Forms/BasicForm',
           },
           {
             path: '/system/job',
-            name: '定时任务',
             routes:[
               {
                 path: '/system/job/jobList',
-                name: '定时任务',
                 component: './Sys/Job/Job',
               },
               {
                 path: '/system/job/jobLogList',
-                name: '定时任务日志',
                 component: './Sys/Job/JobLog',
               },
             ]
           },
           {
             path: '/system/log',
-            name: '系统日志',
             component: './Sys/Log/Log',
           },
         ],

@@ -54,13 +54,15 @@ class BasicLayout extends React.Component {
     } = this.props;
     dispatch({
       type: 'user/fetchCurrent',
-    });
-    dispatch({
-      type: 'setting/getSetting',
-    });
-    dispatch({
-      type: 'menu/getMenuData',
-      payload: { routes, path, authority },
+    })
+    .then(({code,data}) => {
+      if(code===0){
+        let menuList=data.menuList;
+        dispatch({
+          type: 'menu/getMenuData',
+          payload: { routes, path, authority, menuList},
+        });
+      }
     });
     window.modal = React.createRef();
     window.modalOffice = React.createRef();
@@ -172,11 +174,10 @@ class BasicLayout extends React.Component {
   }
 }
 
-export default connect(({ global, setting, menu: menuModel,user }) => ({
+export default connect(({ global, setting, menu: menuModel}) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   menuData: menuModel.menuData,
-  // menuData: user.currentUser.menuList,
   breadcrumbNameMap: menuModel.breadcrumbNameMap,
   ...setting,
 }))(props => (
