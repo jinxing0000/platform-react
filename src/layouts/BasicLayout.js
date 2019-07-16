@@ -174,7 +174,7 @@ class BasicLayout extends React.Component {
   }
 }
 
-export default connect(({ global, setting, menu: menuModel}) => ({
+export default connect(({ global, setting, menu: menuModel,user}) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   menuData: menuModel.menuData,

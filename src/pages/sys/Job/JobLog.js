@@ -21,9 +21,13 @@ class JobLog extends PureComponent {
   constructor(props) {
     super(props);
     const params=this.props.location.params;
+    let jobId;
+    if(params && params.jobId){
+      jobId=params.jobId;
+    }
     this.state = {
       selectedRows: [],
-      params: {page:1,limit:10,jobId:params.jobId},
+      params: {page:1,limit:10,jobId:jobId},
     };
   }
 

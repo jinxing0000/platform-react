@@ -8,8 +8,9 @@ import DeptAddOrUpdate from './DeptAddOrUpdate';
 
 
 
-@connect(({ dept, loading }) => ({
+@connect(({ user,dept, loading }) => ({
   dept,
+  user,
   getDeptTreeListLoading: loading.effects['dept/getTreeList'],
   saveDeptLoading: loading.effects['dept/saveDeptInfo'],
   editDeptLoading: loading.effects['dept/editDeptInfo'],
@@ -73,13 +74,16 @@ class Dept extends PureComponent {
   }
 
   render() {
+
     const {
+      user:{ currentUser },
       dept: { deptTreeList,deptInfo },
       getDeptTreeListLoading,
       saveDeptLoading,
       editDeptLoading,
       deleteDeptByIdLoading
     } = this.props;
+    console.info(this.props);
     const{edit} =this.state;
     const columns = [
       {
@@ -148,24 +152,26 @@ class Dept extends PureComponent {
       <Card bordered={false}>
         <div className={styles.tableList}>
           <div className={styles.tableListOperator}>
-            <Button
-              icon="plus"
-              type="primary"
-              onClick={() => {
-                window.modal.current.getWrappedInstance().alertModal({
-                  title: '新增部门',
-                  btnSubTitle: '新增',
-                  loading: 'dept/saveDeptInfo',
-                  component: DeptAddOrUpdate,
-                  deptTreeList,
-                  record: {},
-                  apply: this.handleSaveDeptInfo,
-                });
-                this.onOK;
-              }}
-            >
-              新建
-            </Button>
+              { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:save') &&
+              <Button
+               icon="plus"
+               type="primary"
+               onClick={() => {
+                 window.modal.current.getWrappedInstance().alertModal({
+                   title: '新增部门',
+                   btnSubTitle: '新增',
+                   loading: 'dept/saveDeptInfo',
+                   component: DeptAddOrUpdate,
+                   deptTreeList,
+                   record: {},
+                   apply: this.handleSaveDeptInfo,
+                 });
+                 this.onOK;
+               }}
+             >
+               新建
+             </Button>
+            }
           </div>
           <StandardTable
             rowKey="deptId"

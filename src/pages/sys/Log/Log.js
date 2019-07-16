@@ -202,7 +202,7 @@ class Log extends PureComponent {
           <div className={styles.tableListOperator}>
           </div>
           <StandardTable
-            rowKey="userId"
+            rowKey="id"
             defaultExpandAllRows
             loading={getLogListLoading}
             selectedRows={true}
