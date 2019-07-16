@@ -73,6 +73,23 @@ class Login extends Component {
     };
   };
 
+  componentDidMount(){
+    document.body.addEventListener("keyup",(e)=>{
+      if(window.event){
+        e=window.event;
+      }
+      let code = e.charCode || e.keyCode;
+      if(code===13){
+        const { active, type } = this.state;
+        const { form, onSubmit } = this.props;
+        const activeFileds = active[type];
+        form.validateFields(activeFileds, { force: true }, (err, values) => {
+          onSubmit(err, values);
+        });
+      }
+    });
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     const { active, type } = this.state;
