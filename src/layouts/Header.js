@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { formatMessage } from 'umi-plugin-react/locale';
-import { Layout, message } from 'antd';
+import { Layout, message ,Modal,Form,Input } from 'antd';
 import Animate from 'rc-animate';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -10,9 +10,19 @@ import styles from './Header.less';
 
 
 const { Header } = Layout;
+const { Item: FormItem } = Form;
+@connect(({ user, loading }) => ({
+  user,
+  modifyPasswordLoading: loading.effects['user/modifyPassword'],
+}))
+@Form.create()
 class HeaderView extends Component {
   state = {
     visible: true,
+    modifyPassword:false,
+    passwordMap:{
+
+    }
   };
 
   static getDerivedStateFromProps(props, state) {
@@ -73,6 +83,9 @@ class HeaderView extends Component {
         type: 'login/logout',
       });
     }
+    if(key === 'modifyPassword'){
+       this.openModifyPassword();
+    }
   };
 
   handleNoticeVisibleChange = visible => {
@@ -113,8 +126,50 @@ class HeaderView extends Component {
     }
   };
 
+  openModifyPassword(){
+    this.setState({modifyPassword:true});
+  }
+
+  modifyPassword= e =>{
+    const { passwordMap } = this.state;
+    const { form, dispatch } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const values = {
+        ...fieldsValue,
+      };
+      this.setState({
+        passwordMap: values,
+      });
+      if(values.password!==values.newPassword){
+        message.error("两次新密码不一致！！");
+        return ;
+      }
+      dispatch({
+        type: 'user/modifyPassword',
+        payload: values,
+      })
+      .then(({code}) => {
+        if(code===0){
+          this.setState({modifyPassword:false});
+          window.g_app._store.dispatch({
+            type: 'login/sessionInvalidation',
+          });
+        }
+      });
+    });
+  }
+
+  cancelModifyPassword = e => {
+    this.setState({modifyPassword:false});
+  }
+
   render() {
     const { isMobile, handleMenuCollapse, setting,login } = this.props;
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    const { passwordMap }= this.state; 
     const { navTheme, layout, fixedHeader } = setting;
     const { visible } = this.state;
     const isTop = layout === 'topmenu';
@@ -146,6 +201,23 @@ class HeaderView extends Component {
             {...this.props}
           />
         )}
+          <Modal
+          title="修改密码"
+          visible={this.state.modifyPassword}
+          onOk={this.modifyPassword}
+          onCancel={this.cancelModifyPassword}
+          okText="修改密码"
+        >
+          <FormItem label="原密码" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
+              {getFieldDecorator('oldPassword',{rules: [{ required: true, message: '请输入原密码' }],initialValue: passwordMap.oldPassword,},)(<Input placeholder="请输入原密码" type="password"/>)}
+          </FormItem>
+          <FormItem label="新密码" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
+              {getFieldDecorator('password',{rules: [{ required: true, message: '请输入新密码' }],initialValue: passwordMap.password,})(<Input placeholder="请输入新密码" type="password"/>)}
+          </FormItem>
+          <FormItem label="确认密码" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
+              {getFieldDecorator('newPassword',{rules: [{ required: true, message: '请输入确认密码' }],initialValue: passwordMap.newPassword,})(<Input placeholder="请输入确认密码" type="password"/>)}
+          </FormItem>
+        </Modal>
       </Header>
     ) : null;
     return (

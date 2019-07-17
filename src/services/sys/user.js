@@ -40,6 +40,20 @@ export async function deleteUserByIds(params) {
       data: params,
     });
 }
+export async function initUserPassword(params) {
+  return request(`/api/sys/user/initUserPassword`,{
+      method: 'PUT',
+      data: params,
+    });
+}
+export async function modifyPassword(params) {
+  return request(`/api/sys/user/modifyPassword`,{
+      method: 'PUT',
+      data: {
+        ...params,
+      },
+    });
+}
 export async function getUserInfoById(userId) {
   return request(`/api/sys/user/info?userId=${userId}`);
 }

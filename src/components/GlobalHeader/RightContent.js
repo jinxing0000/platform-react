@@ -79,8 +79,12 @@ export default class GlobalHeaderRight extends PureComponent {
           <FormattedMessage id="menu.account.center" defaultMessage="account center" />
         </Menu.Item> */}
         <Menu.Item key="userinfo">
+          <Icon type="user" />
+          <FormattedMessage id="个人中心" defaultMessage="个人中心" />
+        </Menu.Item>
+        <Menu.Item key="modifyPassword">
           <Icon type="setting" />
-          <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
+          <FormattedMessage id="修改密码" defaultMessage="修改密码" />
         </Menu.Item>
         {/* <Menu.Item key="triggerError">
           <Icon type="close-circle" />

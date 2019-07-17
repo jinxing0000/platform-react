@@ -1,4 +1,4 @@
-import { query as queryUsers, queryCurrent,getUserList,saveUserInfo,getUserInfoById,editUserInfo,deleteUserByIds } from '@/services/sys/user';
+import { query as queryUsers, queryCurrent,getUserList,saveUserInfo,getUserInfoById,editUserInfo,deleteUserByIds,initUserPassword,modifyPassword } from '@/services/sys/user';
 import { message } from 'antd';
 
 export default {
@@ -95,6 +95,24 @@ export default {
     const result = yield call(deleteUserByIds, payload);
     if(result.code===0){
       message.success("删除成功！！");
+    }else{
+      message.error(result.msg);
+    }
+    return result;
+  },
+  *initUserPassword({ payload }, { call, put }){
+    const result = yield call(initUserPassword, payload);
+    if(result.code===0){
+      message.success("重置成功！！重置密码为：123456",10);
+    }else{
+      message.error(result.msg);
+    }
+    return result;
+  },
+  *modifyPassword({ payload }, { call, put }){
+    const result = yield call(modifyPassword, payload);
+    if(result.code===0){
+      message.success("密码修改成功！！");
     }else{
       message.error(result.msg);
     }

@@ -65,7 +65,6 @@ export default class UserAddOrUpdate extends Component {
   };
   render() {
     const { form, record, role: { roleList },dept: {deptTreeList} ,user:{userInfo}} = this.props;
-    debugger;
     return (
           <Form onSubmit={this.okHandler}>
             {form.getFieldDecorator('userId', {

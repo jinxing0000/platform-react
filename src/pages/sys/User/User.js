@@ -16,6 +16,7 @@ const { confirm } = Modal;
   saveUserLoading: loading.effects['user/saveUserInfo'],
   editUserLoading: loading.effects['user/editUserInfo'],
   deleteUserByIdsLoading: loading.effects['user/deleteUserByIds'],
+  initUserPasswordLoading: loading.effects['user/initUserPassword'],
 }))
 @Form.create()
 class User extends PureComponent {
@@ -134,6 +135,37 @@ class User extends PureComponent {
   }
 
 
+  //重置用户密码
+  initUserPassword(){
+    const { dispatch } = this.props;
+    const {selectedRows} = this.state;
+    if(selectedRows.length===0){
+      message.error("请选择用户！！");
+       return ;
+    }
+    let ids=new Array();
+    for(var i=0;i<selectedRows.length;i++){
+      ids[i]=selectedRows[i].userId;
+    }
+    let userPage=this;
+    confirm({
+      title: '您确定要重置所选用户密码?',
+      okText: '重置',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        dispatch({
+          type: "user/initUserPassword",
+          payload: ids,
+        })
+      },
+      onCancel() {
+          
+      },
+    });
+  }
+
+
 
   // 翻页
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -202,7 +234,8 @@ class User extends PureComponent {
       getUserListLoading,
       saveUserLoading,
       editUserLoading,
-      deleteUserByIdsLoading
+      deleteUserByIdsLoading,
+      initUserPasswordLoading
     } = this.props;
     const columns = [
     {
@@ -333,11 +366,20 @@ class User extends PureComponent {
               批量删除
             </Button>
            }
+           { currentUser.permsSet && currentUser.permsSet.includes('sys:user:initUserPassword') &&
+            <Button
+              onClick={() => {
+                  this.initUserPassword();
+              }}
+            >
+              重置密码
+            </Button>
+           }
           </div>
           <StandardTable
             rowKey="userId"
             defaultExpandAllRows
-            loading={getUserListLoading||saveUserLoading||editUserLoading||deleteUserByIdsLoading}
+            loading={getUserListLoading||saveUserLoading||editUserLoading||deleteUserByIdsLoading||initUserPasswordLoading}
             selectedRows={true}
             data={userList}
             columns={columns}

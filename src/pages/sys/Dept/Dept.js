@@ -83,7 +83,6 @@ class Dept extends PureComponent {
       editDeptLoading,
       deleteDeptByIdLoading
     } = this.props;
-    console.info(this.props);
     const{edit} =this.state;
     const columns = [
       {
