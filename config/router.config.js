@@ -326,7 +326,6 @@ export default [
       { path: '/', redirect: '/system/user'},
       {
         path: '/system',
-        icon: 'dashboard',
         routes: [
           {
             path: '/system/user',
@@ -366,6 +365,16 @@ export default [
             component: './Sys/Log/Log',
           },
         ],
+      },
+      //基础管理模块
+      {
+        path: '/base',
+        routes: [
+          {
+            path: '/base/supplierInfo',
+            component: './Base/SupplierInfo/SupplierInfo',
+          },
+        ]
       },
     ],
   },
