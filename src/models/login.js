@@ -4,6 +4,7 @@ import { fakeAccountLogin, getFakeCaptcha,logout } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
+import { message } from 'antd';
 
 export default {
   namespace: 'login',
@@ -19,11 +20,11 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      localStorage.removeItem('token');
       const result = yield call(fakeAccountLogin, payload);
       const response=result.data;
       // Login successfully
       if (response.code === 0) {
+        localStorage.removeItem('token');
         const token=result.response.headers.get("Authorization");
         localStorage.setItem('token', token);
         response.currentAuthority="user";
@@ -54,15 +55,19 @@ export default {
 
     *getCaptcha({ payload }, { call,put }) {
       // 获取验证码之前，先清空 token
-      localStorage.removeItem('verifyCodeToken');
+      localStorage.removeItem('token');
       const response=yield call(getFakeCaptcha, payload);
       const token=response.response.headers.get("Authorization");
-      const img=response.data.img;
-      localStorage.setItem('verifyCodeToken', token);
-      yield put({
-        type: 'setCaptcha',
-        payload:'data:image/JPEG;base64,'+img,
-      });
+      if(response.data.code===0){
+        const img=response.data.img;
+        localStorage.setItem('token', token);
+        yield put({
+          type: 'setCaptcha',
+          payload:'data:image/JPEG;base64,'+img,
+        });
+      }else{
+        message.error(response.data.msg);
+      }
     },
 
     *logout({ payload }, { call,put }) {
@@ -89,6 +94,7 @@ export default {
           );
         }
       }else{
+        message.error(response.msg);
         yield put({
           type: 'changeLogoutStatus',
           payload:response

@@ -165,7 +165,7 @@ class HeaderView extends Component {
   }
 
   render() {
-    const { isMobile, handleMenuCollapse, setting,login } = this.props;
+    const { isMobile, handleMenuCollapse, setting,login,modifyPasswordLoading } = this.props;
     const {
       form: { getFieldDecorator },
     } = this.props;

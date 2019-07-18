@@ -72,7 +72,6 @@ const request = extend({
 request.interceptors.request.use((url, options) => {
   options.headers = {
   ...options.headers,
-    "verifyCodeToken":localStorage.getItem("verifyCodeToken"),
     "Authorization":localStorage.getItem("token")
   }
   return (

@@ -89,10 +89,10 @@ class BasicLayout extends React.Component {
 
   handleMenuCollapse = collapsed => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'global/changeLayoutCollapsed',
-      payload: collapsed,
-    });
+    // dispatch({
+    //   type: 'global/changeLayoutCollapsed',
+    //   payload: collapsed,
+    // });
   };
 
   renderSettingDrawer = () => {
