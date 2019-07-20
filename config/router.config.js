@@ -376,6 +376,22 @@ export default [
           },
         ]
       },
+      //旅游信息平台模块
+      {
+        path: '/tourism',
+        routes: [
+          //产品列表页面
+          {
+            path: '/tourism/productInfo',
+            component: './Tourism/ProductInfo/ProductInfo',
+          },
+          //产品新增修改页面
+          {
+            path: '/tourism/productInfoAddOrUpdate',
+            component: './Tourism/ProductInfo/ProductInfoAddOrUpdate',
+          },
+        ]
+      },
     ],
   },
 ];
