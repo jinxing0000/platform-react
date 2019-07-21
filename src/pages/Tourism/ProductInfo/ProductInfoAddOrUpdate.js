@@ -47,7 +47,6 @@ export default class ProductInfoAddOrUpdate extends Component {
     handleCancel = () => this.setState({ previewVisible: false });
     //查看大图
     handlePreview = async file => {
-        debugger;
         if (!file.url && !file.preview) {
           file.preview = await getBase64(file.originFileObj);
         }
@@ -56,9 +55,9 @@ export default class ProductInfoAddOrUpdate extends Component {
           previewVisible: true,
         });
     };
+    //上传文件
     handleChange = (info) => {
         const {fileList,file} =info;
-        console.info(file);
         //后端成功返回数据
         if(file.status === 'done'){
             const { msg,code,fileUrl,minioPath } = file.response;
@@ -87,6 +86,17 @@ export default class ProductInfoAddOrUpdate extends Component {
             this.setState({ fileList:fileList });
         }
     };
+    //删除图片
+    handleRemove = (info) =>{
+        const {fileList} = this.state;
+        for (let i = 0; i < fileList.length; i++) {
+            if (info.uid === fileList[i].uid) {
+              fileList.splice(i, 1);
+            }
+        }
+        this.setState({ fileList:fileList });
+        message.success("删除文件成功！！");
+    }
 
     render() {
         const {  form} = this.props;
@@ -203,6 +213,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                         fileList={fileList}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
+                        onRemove={this.handleRemove}
                         multiple={true}
                         >
                         {fileList.length >= 5 ? null : 
