@@ -25,7 +25,10 @@ export default class ProductInfoAddOrUpdate extends Component {
     state = {
         previewVisible: false,
         previewImage:'',
-        record:{},
+        record:{
+            productName:"111111111111",
+            picList:[]
+        },
         fileList:[
 
         ]
@@ -58,6 +61,7 @@ export default class ProductInfoAddOrUpdate extends Component {
     //上传文件
     handleChange = (info) => {
         const {fileList,file} =info;
+        const { record} = this.state;
         //后端成功返回数据
         if(file.status === 'done'){
             const { msg,code,fileUrl,minioPath } = file.response;
@@ -68,34 +72,47 @@ export default class ProductInfoAddOrUpdate extends Component {
                         fileList[i].minioPath=minioPath;
                     }
                 }
-                this.setState({ fileList:fileList });
+                record.picList=fileList;
+                this.setState({ record:record });
                 message.success("上传文件成功！！");
             }else{
                 //去掉没上传成功的
-                for (let i = 0; i < info.fileList.length; i++) {
+                for (let i = 0; i < fileList.length; i++) {
                     if (file.uid === fileList[i].uid) {
-                      fileList.splice(i, 1);
+                        fileList.splice(i, 1);
                     }
                 }
-                this.setState({ fileList: fileList});
+                record.picList=fileList;
+                this.setState({ record:record });
                 message.error("上传文件失败！！"+msg);
             }
         }
         //正在上传
         if(file.status === 'uploading'){
-            this.setState({ fileList:fileList });
+            record.picList=fileList;
+            this.setState({ record:record });
         }
     };
     //删除图片
     handleRemove = (info) =>{
-        const {fileList} = this.state;
-        for (let i = 0; i < fileList.length; i++) {
-            if (info.uid === fileList[i].uid) {
-              fileList.splice(i, 1);
+        const {record} = this.state;
+        const picList=record.picList;
+        for (let i = 0; i < picList.length; i++) {
+            if (info.uid === picList[i].uid) {
+                picList.splice(i, 1);
             }
         }
-        this.setState({ fileList:fileList });
+        record.picList=picList;
+        this.setState({ record:record });
         message.success("删除文件成功！！");
+    }
+    //上传之前校验文件类型
+    handleBeforeUpload = (file) => {
+        const isJPG = file.type === 'image/jpeg' ||file.type === 'image/png'|| file.type === 'image/gif' ;
+        if (!isJPG) {
+            message.error("只能上传图片类型！！例如：jpg、png、gif");
+        }
+        return isJPG;
     }
 
     render() {
@@ -210,13 +227,14 @@ export default class ProductInfoAddOrUpdate extends Component {
                             authorization: localStorage.getItem("token"),
                         }}
                         listType="picture-card"
-                        fileList={fileList}
+                        fileList={record.picList}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
                         onRemove={this.handleRemove}
+                        beforeUpload={this.handleBeforeUpload}
                         multiple={true}
                         >
-                        {fileList.length >= 5 ? null : 
+                        {record.picList.length >= 5 ? null : 
                            <div>
                            <Icon type="plus" />
                            <div className="ant-upload-text">上传</div>
