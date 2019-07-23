@@ -70,6 +70,7 @@ export default {
             }else{
                 message.error(result.msg);
             }
+            return result;
         }
     },
 

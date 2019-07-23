@@ -1,60 +1,96 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Col, Form, Input, Row, Select, Tree ,message,Card,Upload,Modal,Icon } from 'antd';
+import { Col, Form, Input, Row, Select, Tree ,message,Card,Upload,Modal,Icon,Spin,InputNumber,DatePicker,Button  } from 'antd';
+import { routerRedux } from 'dva/router';
 import BTreeSelect from '../../../components/nd_component/BTreeSelect';
 import styles from './ProductInfo.less';
+import { getTimeDistance } from '@/utils/utils';
 const { TreeNode } = Tree;
-
-
-function getBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
-  }
-
-
 
 const { Item: FormItem } = Form;
 const Option = Select.Option;
 @Form.create()
-@connect(({ productInfo }) => ({ productInfo }))
+@connect(({ productInfo,loading }) => 
+({ 
+    productInfo,
+    saveLoading: loading.effects['productInfo/saveInfo'],
+    editLoading: loading.effects['productInfo/editInfo'],
+    getInfoByIdLoading: loading.effects['productInfo/getInfoById'],
+}))
 export default class ProductInfoAddOrUpdate extends Component {
+    
     state = {
         previewVisible: false,
         previewImage:'',
         record:{
-            productName:"111111111111",
+            lineType:"2",
+            tripDays:2,
+            tripNightNum:1,
+            //startDate:getTimeDistance('today'),
             picList:[]
         },
-        fileList:[
-
-        ]
     };
     componentDidMount() {
-        const { record, dispatch} = this.props;
+        const {dispatch} = this.props;
+        let  record=this.props.location.params;
+        debugger;
+        if(record&&record.id){
+            dispatch({
+                type: 'productInfo/getInfoById',
+                payload: record.id,
+            })
+            .then(({code,data}) => {
+                debugger;
+                data.picList=[];
+                if(code===0){
+                    this.setState({ record:data });
+                }
+            });
+        }
     }
-    okHandler = () => {
-        this.props.form.validateFields((err, fields) => {
-            if (!err) {
-            const dataToSubmit = {
-                ...fields,
-            };
-            this.props.onSubmit(err, dataToSubmit);
-            }
+    //校验图片数据
+    checkImageList = (rule, value, callback) => {
+        const { form } = this.props;
+        const {picList} = this.state.record;
+        if(picList.length===0&&value.length===0){
+            callback('error');
+        }
+        else{
+            callback();
+        }
+    }
+
+    okHandler = (e) => {
+        const { dispatch, form } = this.props;
+        const { picList } = this.state.record;
+        e.preventDefault();
+        form.validateFieldsAndScroll((err, values) => {
+          values.picList=picList;
+          console.info(values);
+          if (!err) {
+              if(picList.length===0){
+                  message.error("请上传产品图片！！");
+                  return ;
+              }
+            //保存数据
+            dispatch({
+                type: 'productInfo/saveInfo',
+                payload: values,
+            })
+            .then(({code}) => {
+                if(code===0){
+                    this.goToProductList();
+                }
+            });
+          }
         });
     };
     //关闭大图展示框
     handleCancel = () => this.setState({ previewVisible: false });
     //查看大图
     handlePreview = async file => {
-        if (!file.url && !file.preview) {
-          file.preview = await getBase64(file.originFileObj);
-        }
         this.setState({
-          previewImage: file.url || file.preview,
+          previewImage: file.thumbUrl,
           previewVisible: true,
         });
     };
@@ -114,10 +150,19 @@ export default class ProductInfoAddOrUpdate extends Component {
         }
         return isJPG;
     }
+    //返回产品列表页面
+    goToProductList = () =>{
+        this.props.dispatch(routerRedux.push({ 
+            pathname: '/tourism/productInfo',
+            params: {
+                record:{}
+            }
+        }))
+    }
 
     render() {
-        const {  form} = this.props;
-        const {record,previewVisible,previewImage,fileList} = this.state;
+        const {  form,saveLoading } = this.props;
+        const {record,previewVisible,previewImage} = this.state;
         return (
             <Form onSubmit={this.okHandler}>
                 {form.getFieldDecorator('id', {
@@ -136,9 +181,24 @@ export default class ProductInfoAddOrUpdate extends Component {
                         <Col span={6}>
                             <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="线路类型">
                                 {form.getFieldDecorator('lineType', {
-                                    rules: [{ required: true, message: '请输入线路类型，1为一日游，2为国内游，3为赴台游，4为出境游' }],
+                                    rules: [{ required: true, message: '请输入线路类型' }],
                                     initialValue: record.lineType ? record.lineType : null,
-                                })(<Input placeholder="请输入线路类型，1为一日游，2为国内游，3为赴台游，4为出境游" />)}
+                                })(
+                                    <Select style={{ width: '100%' }}>
+                                        <Select.Option key="1" value="1">
+                                        一日游
+                                        </Select.Option>
+                                        <Select.Option key="2" value="2">
+                                        国内游
+                                        </Select.Option>
+                                        <Select.Option key="3" value="3">
+                                        赴台游
+                                        </Select.Option>
+                                        <Select.Option key="4" value="4">
+                                        出境游
+                                        </Select.Option>
+                                    </Select>
+                                )}
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -146,7 +206,9 @@ export default class ProductInfoAddOrUpdate extends Component {
                                 {form.getFieldDecorator('startingCity', {
                                     rules: [{ required: true, message: '请输入出发城市' }],
                                     initialValue: record.startingCity ? record.startingCity : null,
-                                })(<Input placeholder="请输入出发城市" />)}
+                                })(
+                                    <Input placeholder="请输入出发城市" />
+                                )}
                             </FormItem>
                         </Col>
                     </Row>
@@ -156,7 +218,10 @@ export default class ProductInfoAddOrUpdate extends Component {
                                     {form.getFieldDecorator('tripDays', {
                                         rules: [{ required: true, message: '请输入行程天数' }],
                                         initialValue: record.tripDays ? record.tripDays : null,
-                                    })(<Input placeholder="请输入行程天数" />)}
+                                    })( 
+                                         <InputNumber min={1} max={30} defaultValue={1} style={{ width: '85%' }} />
+                                    )}
+                                    <span className="ant-form-text"> 天</span>
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -164,15 +229,20 @@ export default class ProductInfoAddOrUpdate extends Component {
                                     {form.getFieldDecorator('tripNightNum', {
                                         rules: [{ required: true, message: '请输入行程晚数' }],
                                         initialValue: record.tripNightNum ? record.tripNightNum : null,
-                                    })(<Input placeholder="请输入行程晚数" />)}
+                                    })(
+                                        <InputNumber min={1} max={30} defaultValue={1} style={{ width: '85%' }}/>
+                                    )}
+                                    <span className="ant-form-text">晚</span>
                             </FormItem>
                         </Col>
                         <Col span={6}>
-                            <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="开始日期">
+                            <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="开始日期" >
                                 {form.getFieldDecorator('startDate', {
                                     rules: [{ required: true, message: '请输入日期范围开始' }],
                                     initialValue: record.startDate ? record.startDate : null,
-                                })(<Input placeholder="请输入日期范围开始" />)}
+                                })(
+                                    <DatePicker style={{ width: '100%' }} />
+                                )}
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -180,7 +250,9 @@ export default class ProductInfoAddOrUpdate extends Component {
                                     {form.getFieldDecorator('endDate', {
                                         rules: [{ required: true, message: '请输入日期范围结束' }],
                                         initialValue: record.endDate ? record.endDate : null,
-                                    })(<Input placeholder="请输入日期范围结束" />)}
+                                    })(
+                                        <DatePicker style={{ width: '100%' }}/>
+                                    )}
                             </FormItem>
                         </Col>
                     </Row>
@@ -190,7 +262,9 @@ export default class ProductInfoAddOrUpdate extends Component {
                                 {form.getFieldDecorator('adultPrice', {
                                     rules: [{ required: true, message: '请输入成人价格' }],
                                     initialValue: record.adultPrice ? record.adultPrice : null,
-                                })(<Input placeholder="请输入成人价格" />)}
+                                })(
+                                    <Input placeholder="请输入成人价格" addonAfter="元" />
+                                )}
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -198,7 +272,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                                 {form.getFieldDecorator('childrenPrice', {
                                     rules: [{ required: true, message: '请输入儿童价格' }],
                                     initialValue: record.childrenPrice ? record.childrenPrice : null,
-                                })(<Input placeholder="请输入儿童价格" />)}
+                                })(<Input placeholder="请输入儿童价格" addonAfter="元"/>)}
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -206,7 +280,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                                 {form.getFieldDecorator('singleRoomPrice', {
                                     rules: [{ required: true, message: '请输入单房差' }],
                                     initialValue: record.singleRoomPrice ? record.singleRoomPrice : null,
-                                })(<Input placeholder="请输入单房差" />)}
+                                })(<Input placeholder="请输入单房差" addonAfter="元"/>)}
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -220,31 +294,38 @@ export default class ProductInfoAddOrUpdate extends Component {
                     </Row>
                 </Card>
                 <Card title="产品展示图" className={styles.card} bordered={false}>
-                    <div className="clearfix">
-                        <Upload
-                        action="/api/sys/file/uploadFile"
-                        headers={{
-                            authorization: localStorage.getItem("token"),
-                        }}
-                        listType="picture-card"
-                        fileList={record.picList}
-                        onPreview={this.handlePreview}
-                        onChange={this.handleChange}
-                        onRemove={this.handleRemove}
-                        beforeUpload={this.handleBeforeUpload}
-                        multiple={true}
-                        >
-                        {record.picList.length >= 5 ? null : 
-                           <div>
-                           <Icon type="plus" />
-                           <div className="ant-upload-text">上传</div>
-                         </div>
-                        }
-                        </Upload>
-                        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                        </Modal>
-                    </div>
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} >
+                        {form.getFieldDecorator('picList', {
+                            rules: [{validator:this.checkImageList,message: '请上传产品展示图',type:"array"},],
+                            initialValue: record.picList.length!==0 ? record.picList : [],
+                        })(
+                            <div className="clearfix">
+                                <Upload
+                                    action="/api/sys/file/uploadFile"
+                                    headers={{
+                                        authorization: localStorage.getItem("token"),
+                                    }}
+                                    listType="picture-card"
+                                    fileList={record.picList}
+                                    onPreview={this.handlePreview}
+                                    onChange={this.handleChange}
+                                    onRemove={this.handleRemove}
+                                    beforeUpload={this.handleBeforeUpload}
+                                    multiple={true}
+                                    >
+                                    {record.picList.length >= 5 ? null : 
+                                    <div>
+                                    <Icon type="plus" />
+                                    <div className="ant-upload-text">上传</div>
+                                    </div>
+                                    }
+                                </Upload>
+                                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} width={1300}>
+                                    <img alt="example" style={{ width: '100%',height:'100%' }} src={previewImage} />
+                                </Modal>
+                            </div>
+                        )}
+                    </FormItem>
                 </Card>
                 <Card title="产品特色" className={styles.card} bordered={false}>
                     <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="产品特色">
@@ -293,6 +374,20 @@ export default class ProductInfoAddOrUpdate extends Component {
                             initialValue: record.returnRules ? record.returnRules : null,
                         })(<Input placeholder="请输入退改规则" />)}
                     </FormItem>
+                </Card>
+                <Card title="" className={styles.card} bordered={false}>
+                   <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                        <Col span={10}>
+                         </Col>
+                        <Col span={14}>
+                            <Button type="primary" htmlType="submit">
+                                保存
+                            </Button>
+                            <Button style={{ marginLeft: 8 }} onClick={this.goToProductList}>
+                                返回
+                            </Button>
+                        </Col>
+                   </Row>
                 </Card>
             </Form>
         );

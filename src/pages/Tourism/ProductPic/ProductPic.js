@@ -212,14 +212,14 @@ class ProductPic extends PureComponent {
                 key: 'productId',
             },
             {
-                title: '图片路径',
-                dataIndex: 'picPath',
-                key: 'picPath',
+                title: '图片展示路径',
+                dataIndex: 'thumbUrl',
+                key: 'thumbUrl',
             },
             {
-                title: '图片类型',
-                dataIndex: 'picType',
-                key: 'picType',
+                title: 'minio下载路径',
+                dataIndex: 'minioPath',
+                key: 'minioPath',
             },
             {
             title: '操作',

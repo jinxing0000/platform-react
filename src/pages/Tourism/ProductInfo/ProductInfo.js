@@ -93,7 +93,7 @@ class ProductInfo extends PureComponent {
             callback('ok');
             this.getList(this.state.params);
         }
-    });
+        });
     };
     //删除旅游产品信息表
     deleteByIds(ids){
@@ -190,11 +190,11 @@ class ProductInfo extends PureComponent {
         );
     }
 
-    goToAddOrUpdatePage(){
+    goToAddOrUpdatePage(id){
         this.props.dispatch(routerRedux.push({ 
             pathname: '/tourism/productInfoAddOrUpdate',
             params: {
-                record:{}
+                id:id
             }
         }))
     }
@@ -337,14 +337,7 @@ class ProductInfo extends PureComponent {
                         type="edit"
                         style={{ fontSize: '15px' }}
                         onClick={() => {
-                            window.modal.current.getWrappedInstance().alertModal({
-                            title: '编辑',
-                            loading: 'productInfo/editInfo',
-                            btnSubTitle: '修改',
-                            component: ProductInfoAddOrUpdate,
-                            record,
-                            apply: this.handleSaveInfo,
-                        });
+                            this.goToAddOrUpdatePage(record.id);
                         }}
                     />
                 </Tooltip>

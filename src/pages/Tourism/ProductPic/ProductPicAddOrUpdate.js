@@ -38,17 +38,17 @@ export default class ProductPicAddOrUpdate extends Component {
                     initialValue: record.productId ? record.productId : null,
                 })(<Input placeholder="请输入产品id" />)}
             </FormItem>
-            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图片路径">
-                {form.getFieldDecorator('picPath', {
-                    rules: [{ required: true, message: '请输入图片路径' }],
-                    initialValue: record.picPath ? record.picPath : null,
-                })(<Input placeholder="请输入图片路径" />)}
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图片展示路径">
+                {form.getFieldDecorator('thumbUrl', {
+                    rules: [{ required: true, message: '请输入图片展示路径' }],
+                    initialValue: record.thumbUrl ? record.thumbUrl : null,
+                })(<Input placeholder="请输入图片展示路径" />)}
             </FormItem>
-            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图片类型">
-                {form.getFieldDecorator('picType', {
-                    rules: [{ required: true, message: '请输入图片类型' }],
-                    initialValue: record.picType ? record.picType : null,
-                })(<Input placeholder="请输入图片类型" />)}
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="minio下载路径">
+                {form.getFieldDecorator('minioPath', {
+                    rules: [{ required: true, message: '请输入minio下载路径' }],
+                    initialValue: record.minioPath ? record.minioPath : null,
+                })(<Input placeholder="请输入minio下载路径" />)}
             </FormItem>
             </Form>
         );
