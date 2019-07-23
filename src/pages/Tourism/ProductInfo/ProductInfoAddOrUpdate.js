@@ -6,6 +6,7 @@ import BTreeSelect from '../../../components/nd_component/BTreeSelect';
 import styles from './ProductInfo.less';
 import { getTimeDistance } from '@/utils/utils';
 const { TreeNode } = Tree;
+import moment from 'moment';
 
 const { Item: FormItem } = Form;
 const Option = Select.Option;
@@ -26,22 +27,20 @@ export default class ProductInfoAddOrUpdate extends Component {
             lineType:"2",
             tripDays:2,
             tripNightNum:1,
-            //startDate:getTimeDistance('today'),
+            startDate:'2019-07-23',
+            startingCity:"晋中市",
             picList:[]
         },
     };
     componentDidMount() {
         const {dispatch} = this.props;
         let  record=this.props.location.params;
-        debugger;
         if(record&&record.id){
             dispatch({
                 type: 'productInfo/getInfoById',
                 payload: record.id,
             })
             .then(({code,data}) => {
-                debugger;
-                data.picList=[];
                 if(code===0){
                     this.setState({ record:data });
                 }
@@ -66,15 +65,24 @@ export default class ProductInfoAddOrUpdate extends Component {
         e.preventDefault();
         form.validateFieldsAndScroll((err, values) => {
           values.picList=picList;
-          console.info(values);
           if (!err) {
-              if(picList.length===0){
-                  message.error("请上传产品图片！！");
-                  return ;
-              }
+            if(picList.length===0){
+                message.error("请上传产品图片！！");
+                return ;
+            }
+            let id=values.id;
+            let url="";
+            //判断为新增
+            if(id==null){
+                url="productInfo/saveInfo";
+            }
+            //修改
+            else{
+                url="productInfo/editInfo";
+            }
             //保存数据
             dispatch({
-                type: 'productInfo/saveInfo',
+                type: url,
                 payload: values,
             })
             .then(({code}) => {
@@ -161,14 +169,14 @@ export default class ProductInfoAddOrUpdate extends Component {
     }
 
     render() {
-        const {  form,saveLoading } = this.props;
+        const {  form,saveLoading,getInfoByIdLoading,editLoading } = this.props;
         const {record,previewVisible,previewImage} = this.state;
         return (
             <Form onSubmit={this.okHandler}>
                 {form.getFieldDecorator('id', {
                     initialValue: record.id ? record.id : null,
                 })(<Input type="hidden" />)}
-                <Card title="产品基本信息" className={styles.card} bordered={false}>
+                <Card title="产品基本信息" className={styles.card} bordered={false} loading={getInfoByIdLoading||saveLoading||editLoading}>
                     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                         <Col span={12}>
                             <FormItem labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} label="产品名称">
@@ -207,7 +215,41 @@ export default class ProductInfoAddOrUpdate extends Component {
                                     rules: [{ required: true, message: '请输入出发城市' }],
                                     initialValue: record.startingCity ? record.startingCity : null,
                                 })(
-                                    <Input placeholder="请输入出发城市" />
+                                    <Select style={{ width: '100%' }}>
+                                        <Select.Option key="太原市" value="太原市">
+                                        太原市
+                                        </Select.Option>
+                                        <Select.Option key="晋中市" value="晋中市">
+                                        晋中市
+                                        </Select.Option>
+                                        <Select.Option key="大同市" value="大同市">
+                                        大同市
+                                        </Select.Option>
+                                        <Select.Option key="朔州市" value="朔州市">
+                                        朔州市
+                                        </Select.Option>
+                                        <Select.Option key="忻州市" value="忻州市">
+                                        忻州市
+                                        </Select.Option>
+                                        <Select.Option key="阳泉市" value="阳泉市">
+                                        阳泉市
+                                        </Select.Option>
+                                        <Select.Option key="吕梁市" value="吕梁市">
+                                        吕梁市
+                                        </Select.Option>
+                                        <Select.Option key="长治市" value="长治市">
+                                        长治市
+                                        </Select.Option>
+                                        <Select.Option key="晋城市" value="晋城市">
+                                        晋城市
+                                        </Select.Option>
+                                        <Select.Option key="临汾市" value="临汾市">
+                                        临汾市
+                                        </Select.Option>
+                                        <Select.Option key="运城市" value="运城市">
+                                        运城市
+                                        </Select.Option>
+                                    </Select>
                                 )}
                             </FormItem>
                         </Col>
@@ -239,7 +281,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                             <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="开始日期" >
                                 {form.getFieldDecorator('startDate', {
                                     rules: [{ required: true, message: '请输入日期范围开始' }],
-                                    initialValue: record.startDate ? record.startDate : null,
+                                    initialValue:record.startDate ? moment(record.startDate, 'YYYY-MM-DD'):null,
                                 })(
                                     <DatePicker style={{ width: '100%' }} />
                                 )}
@@ -249,7 +291,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                             <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="结束日期">
                                     {form.getFieldDecorator('endDate', {
                                         rules: [{ required: true, message: '请输入日期范围结束' }],
-                                        initialValue: record.endDate ? record.endDate : null,
+                                        initialValue: record.endDate ? moment(record.endDate, 'YYYY-MM-DD'):null,
                                     })(
                                         <DatePicker style={{ width: '100%' }}/>
                                     )}
@@ -293,7 +335,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                         </Col>
                     </Row>
                 </Card>
-                <Card title="产品展示图" className={styles.card} bordered={false}>
+                <Card title="产品展示图" className={styles.card} bordered={false} loading={getInfoByIdLoading||saveLoading||editLoading}>
                     <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} >
                         {form.getFieldDecorator('picList', {
                             rules: [{validator:this.checkImageList,message: '请上传产品展示图',type:"array"},],
@@ -327,7 +369,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                         )}
                     </FormItem>
                 </Card>
-                <Card title="产品特色" className={styles.card} bordered={false}>
+                <Card title="产品特色" className={styles.card} bordered={false} loading={getInfoByIdLoading||saveLoading||editLoading}>
                     <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="产品特色">
                         {form.getFieldDecorator('productCharacteristic', {
                             rules: [{ required: true, message: '请输入产品特色' }],
@@ -336,7 +378,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                     </FormItem>
                 </Card>
                 <Card title="行程介绍" className={styles.card} bordered={false}>
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="行程介绍">
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="行程介绍" loading={getInfoByIdLoading||saveLoading||editLoading}>
                         {form.getFieldDecorator('travelInfo', {
                             rules: [{ required: true, message: '请输入行程介绍' }],
                             initialValue: record.travelInfo ? record.travelInfo : null,
@@ -344,7 +386,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                     </FormItem>
                 </Card>
                 <Card title="费用包含" className={styles.card} bordered={false}>
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="费用包含">
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="费用包含" loading={getInfoByIdLoading||saveLoading||editLoading}>
                         {form.getFieldDecorator('costInclusion', {
                             rules: [{ required: true, message: '请输入费用包含' }],
                             initialValue: record.costInclusion ? record.costInclusion : null,
@@ -352,7 +394,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                     </FormItem>
                 </Card>
                 <Card title="费用不含" className={styles.card} bordered={false}>
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="费用不含">
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="费用不含" loading={getInfoByIdLoading||saveLoading||editLoading}>
                         {form.getFieldDecorator('costExcluded', {
                             rules: [{ required: true, message: '请输入费用不含' }],
                             initialValue: record.costExcluded ? record.costExcluded : null,
@@ -360,7 +402,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                     </FormItem>
                 </Card>
                 <Card title="预定须知" className={styles.card} bordered={false}>
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="预定须知">
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="预定须知" loading={getInfoByIdLoading||saveLoading||editLoading}>
                         {form.getFieldDecorator('reservationNotes', {
                             rules: [{ required: true, message: '请输入预定须知' }],
                             initialValue: record.reservationNotes ? record.reservationNotes : null,
@@ -368,14 +410,14 @@ export default class ProductInfoAddOrUpdate extends Component {
                     </FormItem>
                 </Card>
                 <Card title="退改规则" className={styles.card} bordered={false}>
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="退改规则">
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="退改规则" loading={getInfoByIdLoading||saveLoading||editLoading}>
                         {form.getFieldDecorator('returnRules', {
                             rules: [{ required: true, message: '请输入退改规则' }],
                             initialValue: record.returnRules ? record.returnRules : null,
                         })(<Input placeholder="请输入退改规则" />)}
                     </FormItem>
                 </Card>
-                <Card title="" className={styles.card} bordered={false}>
+                <Card title="" className={styles.card} bordered={false} loading={getInfoByIdLoading||saveLoading||editLoading}>
                    <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                         <Col span={10}>
                          </Col>

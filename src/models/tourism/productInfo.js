@@ -62,6 +62,13 @@ export default {
         },
         *getInfoById({ payload }, { call, put }){
             const result = yield call(getInfoById, payload);
+            let picList=result.data.picList;
+            for(let i=0;i<picList.length;i++){
+                picList[i].uid=picList[i].id;
+                picList[i].status='done';
+                picList[i].url=picList[i].thumbUrl;
+            }
+            result.data.picList=picList;
             if(result.code===0){
                 yield put({
                     type: 'setInfo',

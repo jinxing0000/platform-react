@@ -171,8 +171,8 @@ class ProductInfo extends PureComponent {
             <Form onSubmit={this.handleSearch} layout="inline">
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                     <Col md={6} sm={24}>
-                        <FormItem label="名称">
-                            {getFieldDecorator('name',{initialValue: params.name,})(<Input placeholder="请输入名称" />)}
+                        <FormItem label="产品名称">
+                            {getFieldDecorator('productName',{initialValue: params.name,})(<Input placeholder="请输入产品名称" />)}
                         </FormItem>
                     </Col>
                     <Col md={8} sm={24}>
@@ -230,6 +230,24 @@ class ProductInfo extends PureComponent {
                 title: '线路类型',
                 dataIndex: 'lineType',
                 key: 'lineType',
+                render: record => {
+                    switch (record) {
+                      case '1':
+                        return <span> 一日游</span>;
+                        break;
+                      case '2':
+                        return <span>国内游</span>;
+                        break;
+                    case '3':
+                        return <span>赴台游</span>;
+                        break;
+                    case '4':
+                        return <span>出境游</span>;
+                        break;
+                    default:
+                        break;
+                    }
+                  },
             },
             {
                 title: '出发城市',
@@ -326,6 +344,21 @@ class ProductInfo extends PureComponent {
                 title: '状态',
                 dataIndex: 'state',
                 key: 'state',
+                render: record => {
+                    switch (record) {
+                      case '0':
+                        return <span>未上架</span>;
+                        break;
+                      case '1':
+                        return <span>上架中</span>;
+                        break;
+                      case '2':
+                        return <span>已下架</span>;
+                        break;
+                      default:
+                        break;
+                    }
+                  },
             },
             {
             title: '操作',
