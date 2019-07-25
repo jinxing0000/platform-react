@@ -6,9 +6,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './Dept.less';
 import DeptAddOrUpdate from './DeptAddOrUpdate';
 
-
-
-@connect(({ user,dept, loading }) => ({
+@connect(({ user, dept, loading }) => ({
   dept,
   user,
   getDeptTreeListLoading: loading.effects['dept/getTreeList'],
@@ -18,9 +16,7 @@ import DeptAddOrUpdate from './DeptAddOrUpdate';
 }))
 @Form.create()
 class Dept extends PureComponent {
-
-  state = {
-  };
+  state = {};
 
   //页面初始化加载
   componentDidMount() {
@@ -28,8 +24,8 @@ class Dept extends PureComponent {
     this.handleSearch();
   }
 
-   //查询部门tree
-   handleSearch = e => {
+  //查询部门tree
+  handleSearch = e => {
     const { dispatch, form } = this.props;
     dispatch({
       type: 'dept/getDeptTreeList',
@@ -38,52 +34,49 @@ class Dept extends PureComponent {
   //新增修改部门
   handleSaveDeptInfo = (fields, callback) => {
     const { dispatch } = this.props;
-    const deptId=fields.deptId;
-    let url="";
+    const deptId = fields.deptId;
+    let url = '';
     //判断为新增
-    if(deptId==null){
-      url="dept/saveDeptInfo";
+    if (deptId == null) {
+      url = 'dept/saveDeptInfo';
     }
     //修改
-    else{
-      url="dept/editDeptInfo";
+    else {
+      url = 'dept/editDeptInfo';
     }
     dispatch({
       type: url,
       payload: fields,
-    })
-    .then(({code}) => {
-      if(code===0){
+    }).then(({ code }) => {
+      if (code === 0) {
         callback('ok');
         this.handleSearch();
       }
     });
   };
   //删除部门
-  deleteDeptById(id){
+  deleteDeptById(id) {
     const { dispatch } = this.props;
     dispatch({
-      type: "dept/deleteDeptById",
+      type: 'dept/deleteDeptById',
       payload: id,
-    })
-    .then(({code}) => {
-      if(code===0){
+    }).then(({ code }) => {
+      if (code === 0) {
         this.handleSearch();
       }
     });
   }
 
   render() {
-
     const {
-      user:{ currentUser },
-      dept: { deptTreeList,deptInfo },
+      user: { currentUser },
+      dept: { deptTreeList, deptInfo },
       getDeptTreeListLoading,
       saveDeptLoading,
       editDeptLoading,
-      deleteDeptByIdLoading
+      deleteDeptByIdLoading,
     } = this.props;
-    const{edit} =this.state;
+    const { edit } = this.state;
     const columns = [
       {
         title: '部门名称',
@@ -104,44 +97,44 @@ class Dept extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:update') &&
-            <Tooltip placement="bottom" title="编辑">
-              <Icon
-                type="edit"
-                style={{ fontSize: '15px' }}
-                onClick={() => {
-                  window.modal.current.getWrappedInstance().alertModal({
-                    title: '编辑部门',
-                    loading: 'dept/editDeptInfo',
-                    btnSubTitle: '修改',
-                    component: DeptAddOrUpdate,
-                    deptTreeList,
-                    record,
-                    apply: this.handleSaveDeptInfo,
-                  });
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:dept:update') && (
+              <Tooltip placement="bottom" title="编辑">
+                <Icon
+                  type="edit"
+                  style={{ fontSize: '15px' }}
+                  onClick={() => {
+                    window.modal.current.getWrappedInstance().alertModal({
+                      title: '编辑部门',
+                      loading: 'dept/editDeptInfo',
+                      btnSubTitle: '修改',
+                      component: DeptAddOrUpdate,
+                      deptTreeList,
+                      record,
+                      apply: this.handleSaveDeptInfo,
+                    });
+                  }}
+                />
+              </Tooltip>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:dept:update') && (
+              <Divider type="vertical" />
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:dept:delete') && (
+              <Popconfirm
+                title="确认删除这个部门？"
+                okText="删除"
+                cancelText="取消"
+                onConfirm={() => {
+                  this.deleteDeptById(record.deptId);
                 }}
-              />
-            </Tooltip>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:update') &&
-            <Divider type="vertical" />
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:delete') &&
-            <Popconfirm
-              title="确认删除这个部门？"
-              okText="删除"
-              cancelText="取消"
-              onConfirm={() => {
-                this.deleteDeptById(record.deptId);
-              }}
-            >
-              <a>
-                <Tooltip placement="bottom" title="删除">
-                  <Icon type="delete" style={{ fontSize: '15px', color: '#EE4000' }} />
-                </Tooltip>
-              </a>
-            </Popconfirm>
-            }
+              >
+                <a>
+                  <Tooltip placement="bottom" title="删除">
+                    <Icon type="delete" style={{ fontSize: '15px', color: '#EE4000' }} />
+                  </Tooltip>
+                </a>
+              </Popconfirm>
+            )}
           </Fragment>
         ),
       },
@@ -151,31 +144,33 @@ class Dept extends PureComponent {
       <Card bordered={false}>
         <div className={styles.tableList}>
           <div className={styles.tableListOperator}>
-              { currentUser.permsSet && currentUser.permsSet.includes('sys:dept:save') &&
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:dept:save') && (
               <Button
-               icon="plus"
-               type="primary"
-               onClick={() => {
-                 window.modal.current.getWrappedInstance().alertModal({
-                   title: '新增部门',
-                   btnSubTitle: '新增',
-                   loading: 'dept/saveDeptInfo',
-                   component: DeptAddOrUpdate,
-                   deptTreeList,
-                   record: {},
-                   apply: this.handleSaveDeptInfo,
-                 });
-                 this.onOK;
-               }}
-             >
-               新建
-             </Button>
-            }
+                icon="plus"
+                type="primary"
+                onClick={() => {
+                  window.modal.current.getWrappedInstance().alertModal({
+                    title: '新增部门',
+                    btnSubTitle: '新增',
+                    loading: 'dept/saveDeptInfo',
+                    component: DeptAddOrUpdate,
+                    deptTreeList,
+                    record: {},
+                    apply: this.handleSaveDeptInfo,
+                  });
+                  this.onOK;
+                }}
+              >
+                新建
+              </Button>
+            )}
           </div>
           <StandardTable
             rowKey="deptId"
             defaultExpandAllRows={false}
-            loading={getDeptTreeListLoading||saveDeptLoading||editDeptLoading||deleteDeptByIdLoading}
+            loading={
+              getDeptTreeListLoading || saveDeptLoading || editDeptLoading || deleteDeptByIdLoading
+            }
             selectedRows={false}
             data={deptTreeList}
             columns={columns}

@@ -29,6 +29,8 @@ const { confirm } = Modal;
   saveLoading: loading.effects['productInfo/saveInfo'],
   editLoading: loading.effects['productInfo/editInfo'],
   deleteByIdsLoading: loading.effects['productInfo/deleteByIds'],
+  upperShelfLoading: loading.effects['productInfo/upperShelf'],
+  lowerShelfLoading: loading.effects['productInfo/lowerShelf'],
 }))
 @Form.create()
 class ProductInfo extends PureComponent {
@@ -116,6 +118,50 @@ class ProductInfo extends PureComponent {
       }
     });
   }
+  // 修改旅游产品状态
+  updateStateByIds(type) {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) {
+      message.error('请选择旅游产品数据！！');
+      return;
+    }
+    let ids = new Array();
+    for (var i = 0; i < selectedRows.length; i++) {
+      ids[i] = selectedRows[i].id;
+    }
+    let url = '';
+    let str = '';
+    // 上架
+    if ('upperShelf' === type) {
+      url = 'productInfo/upperShelf';
+      str = '上架';
+    }
+    // 下架
+    else if ('lowerShelf' === type) {
+      url = 'productInfo/lowerShelf';
+      str = '下架';
+    }
+    let userPage = this;
+    confirm({
+      title: '您确定要' + str + '所选产品吗?',
+      okText: str,
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        dispatch({
+          type: url,
+          payload: { ids: ids },
+        }).then(({ code }) => {
+          if (code === 0) {
+            userPage.getList(userPage.state.params);
+          }
+        });
+      },
+      onCancel() {},
+    });
+  }
+
   //批量删除旅游产品信息表信息
   batchDelete() {
     const { selectedRows } = this.state;
@@ -216,6 +262,8 @@ class ProductInfo extends PureComponent {
       saveLoading,
       editLoading,
       deleteByIdsLoading,
+      upperShelfLoading,
+      lowerShelfLoading,
     } = this.props;
     const columns = [
       {
@@ -442,11 +490,40 @@ class ProductInfo extends PureComponent {
                 批量删除
               </Button>
             )}
+            {currentUser.permsSet &&
+              currentUser.permsSet.includes('tourism:productInfo:upperShelf') && (
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.updateStateByIds('upperShelf');
+                  }}
+                >
+                  上架
+                </Button>
+              )}
+            {currentUser.permsSet &&
+              currentUser.permsSet.includes('tourism:productInfo:lowerShelf') && (
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.updateStateByIds('lowerShelf');
+                  }}
+                >
+                  下架
+                </Button>
+              )}
           </div>
           <StandardTable
             rowKey="id"
             defaultExpandAllRows
-            loading={getListLoading || saveLoading || editLoading || deleteByIdsLoading}
+            loading={
+              getListLoading ||
+              saveLoading ||
+              editLoading ||
+              deleteByIdsLoading ||
+              upperShelfLoading ||
+              lowerShelfLoading
+            }
             selectedRows={true}
             data={productInfoList}
             columns={columns}
