@@ -322,7 +322,16 @@ export default [
     //Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/system/user' },
+      { path: '/', redirect: '/home' },
+      {
+        path: '/home',
+        routes: [
+          {
+            path: '/home',
+            component: './Home/Home',
+          },
+        ],
+      },
       {
         path: '/system',
         routes: [
