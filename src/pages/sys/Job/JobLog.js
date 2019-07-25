@@ -20,7 +20,7 @@ class JobLog extends PureComponent {
 
   constructor(props) {
     super(props);
-    const params=this.props.location.params;
+    const params=this.props.location.query;
     let jobId;
     if(params && params.jobId){
       jobId=params.jobId;

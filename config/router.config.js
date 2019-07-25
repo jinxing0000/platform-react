@@ -296,7 +296,6 @@
 //   },
 // ];
 
-
 export default [
   // user
   {
@@ -323,7 +322,7 @@ export default [
     //Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/system/user'},
+      { path: '/', redirect: '/system/user' },
       {
         path: '/system',
         routes: [
@@ -349,7 +348,8 @@ export default [
           },
           {
             path: '/system/job',
-            routes:[
+            routes: [
+              { path: '/system/job', redirect: '/system/job/jobList' },
               {
                 path: '/system/job/jobList',
                 component: './Sys/Job/Job',
@@ -358,7 +358,7 @@ export default [
                 path: '/system/job/jobLogList',
                 component: './Sys/Job/JobLog',
               },
-            ]
+            ],
           },
           {
             path: '/system/log',
@@ -374,23 +374,29 @@ export default [
             path: '/base/supplierInfo',
             component: './Base/SupplierInfo/SupplierInfo',
           },
-        ]
+        ],
       },
       //旅游信息平台模块
       {
         path: '/tourism',
         routes: [
-          //产品列表页面
           {
             path: '/tourism/productInfo',
-            component: './Tourism/ProductInfo/ProductInfo',
+            routes: [
+              { path: '/tourism/productInfo', redirect: '/tourism/productInfo/list' },
+              //产品列表页面
+              {
+                path: '/tourism/productInfo/list',
+                component: './Tourism/ProductInfo/ProductInfo',
+              },
+              //产品新增修改页面
+              {
+                path: '/tourism/productInfo/addOrUpdate',
+                component: './Tourism/ProductInfo/ProductInfoAddOrUpdate',
+              },
+            ],
           },
-          //产品新增修改页面
-          {
-            path: '/tourism/productInfoAddOrUpdate',
-            component: './Tourism/ProductInfo/ProductInfoAddOrUpdate',
-          },
-        ]
+        ],
       },
     ],
   },

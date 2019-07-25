@@ -1,6 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col,Card, Form, Icon, Button, Divider, Tooltip, Popconfirm, Modal,message,Input } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Icon,
+  Button,
+  Divider,
+  Tooltip,
+  Popconfirm,
+  Modal,
+  message,
+  Input,
+} from 'antd';
 import { routerRedux } from 'dva/router';
 import StandardTable from '../../../components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -9,9 +22,7 @@ import JobAddOrUpdate from './JobAddOrUpdate';
 const { Item: FormItem } = Form;
 const { confirm } = Modal;
 
-
-
-@connect(({ job, loading,user }) => ({
+@connect(({ job, loading, user }) => ({
   job,
   user,
   getJobListLoading: loading.effects['job/getJobList'],
@@ -24,12 +35,11 @@ const { confirm } = Modal;
 }))
 @Form.create()
 class Job extends PureComponent {
-
   constructor(props) {
     super(props);
     this.state = {
       selectedRows: [],
-      params: {page:1,limit:10},
+      params: { page: 1, limit: 10 },
     };
   }
 
@@ -38,15 +48,15 @@ class Job extends PureComponent {
     this.getJobList(this.state.params);
   }
   //获取定时任务list数据
-  getJobList(params){
+  getJobList(params) {
     const { dispatch } = this.props;
     dispatch({
       type: 'job/getJobList',
       payload: params,
     });
-  } 
-   //条件查询list
-  handleSearch= e => {
+  }
+  //条件查询list
+  handleSearch = e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
     const { params } = this.state;
@@ -68,61 +78,59 @@ class Job extends PureComponent {
     const { form, dispatch } = this.props;
     const { params } = this.state;
     form.resetFields();
-    let searchParams = {page:params.page,limit:params.limit}
+    let searchParams = { page: params.page, limit: params.limit };
     this.setState({
       params: searchParams,
     });
     this.getJobList(searchParams);
   };
   //新增修改定时任务信息
-  handleSaveJobInfo = (fields,callback) => {
+  handleSaveJobInfo = (fields, callback) => {
     const { dispatch } = this.props;
-    const jobId=fields.jobId;
-    let url="";
+    const jobId = fields.jobId;
+    let url = '';
     //判断为新增
-    if(jobId==null){
-      url="job/saveJobInfo";
+    if (jobId == null) {
+      url = 'job/saveJobInfo';
     }
     //修改
-    else{
-      url="job/editJobInfo";
+    else {
+      url = 'job/editJobInfo';
     }
     dispatch({
       type: url,
       payload: fields,
-    })
-    .then(({code}) => {
-      if(code===0){
+    }).then(({ code }) => {
+      if (code === 0) {
         callback('ok');
         this.getJobList(this.state.params);
       }
     });
   };
   //删除定时任务
-  deleteJobByIds(ids){
+  deleteJobByIds(ids) {
     const { dispatch } = this.props;
     dispatch({
-      type: "job/deleteJobByIds",
+      type: 'job/deleteJobByIds',
       payload: ids,
-    })
-    .then(({code}) => {
-      if(code===0){
+    }).then(({ code }) => {
+      if (code === 0) {
         this.getJobList(this.state.params);
       }
     });
   }
   //批量删除定时任务信息
-  batchDeleteJob(){
-    const {selectedRows} = this.state;
-    if(selectedRows.length===0){
-      message.error("请选择定时任务！！", 10);
-       return ;
+  batchDeleteJob() {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) {
+      message.error('请选择定时任务！！', 10);
+      return;
     }
-    let ids=new Array();
-    for(var i=0;i<selectedRows.length;i++){
-      ids[i]=selectedRows[i].jobId;
+    let ids = new Array();
+    for (var i = 0; i < selectedRows.length; i++) {
+      ids[i] = selectedRows[i].jobId;
     }
-    let userPage=this;
+    let userPage = this;
     confirm({
       title: '您确定要删除所选定时任务?',
       okText: '删除',
@@ -131,13 +139,9 @@ class Job extends PureComponent {
       onOk() {
         userPage.deleteJobByIds(ids);
       },
-      onCancel() {
-          
-      },
+      onCancel() {},
     });
   }
-
-
 
   // 翻页
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -168,17 +172,19 @@ class Job extends PureComponent {
       selectedRows: rows,
     });
   };
-   renderSimpleForm() {
+  renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const {params }= this.state; 
+    const { params } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
             <FormItem label="bean名称">
-              {getFieldDecorator('beanName',{initialValue: params.beanName,})(<Input placeholder="请输入bean名称" />)}
+              {getFieldDecorator('beanName', { initialValue: params.beanName })(
+                <Input placeholder="请输入bean名称" />
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -196,18 +202,18 @@ class Job extends PureComponent {
     );
   }
   //执行任务
-  runJob(){
-    const {selectedRows} = this.state;
+  runJob() {
+    const { selectedRows } = this.state;
     const { dispatch } = this.props;
-    if(selectedRows.length===0){
-      message.error("请选择定时任务！！", 10);
-       return ;
+    if (selectedRows.length === 0) {
+      message.error('请选择定时任务！！', 10);
+      return;
     }
-    let ids=new Array();
-    for(var i=0;i<selectedRows.length;i++){
-      ids[i]=selectedRows[i].jobId;
+    let ids = new Array();
+    for (var i = 0; i < selectedRows.length; i++) {
+      ids[i] = selectedRows[i].jobId;
     }
-    let userPage=this;
+    let userPage = this;
     confirm({
       title: '您确定要执行所选定时任务吗?',
       okText: '执行',
@@ -215,33 +221,30 @@ class Job extends PureComponent {
       cancelText: '取消',
       onOk() {
         dispatch({
-            type: "job/runJobByIds",
-            payload: ids,
-        })
-        .then(({code}) => {
-          if(code===0){
+          type: 'job/runJobByIds',
+          payload: ids,
+        }).then(({ code }) => {
+          if (code === 0) {
             userPage.getJobList(userPage.state.params);
           }
         });
       },
-      onCancel() {
-        
-      },
+      onCancel() {},
     });
   }
 
-  pauseJob(){
-    const {selectedRows} = this.state;
+  pauseJob() {
+    const { selectedRows } = this.state;
     const { dispatch } = this.props;
-    if(selectedRows.length===0){
-      message.error("请选择定时任务！！", 10);
-       return ;
+    if (selectedRows.length === 0) {
+      message.error('请选择定时任务！！', 10);
+      return;
     }
-    let ids=new Array();
-    for(var i=0;i<selectedRows.length;i++){
-      ids[i]=selectedRows[i].jobId;
+    let ids = new Array();
+    for (var i = 0; i < selectedRows.length; i++) {
+      ids[i] = selectedRows[i].jobId;
     }
-    let userPage=this;
+    let userPage = this;
     confirm({
       title: '您确定要暂停所选定时任务吗?',
       okText: '暂停',
@@ -249,33 +252,30 @@ class Job extends PureComponent {
       cancelText: '取消',
       onOk() {
         dispatch({
-            type: "job/pauseJobByIds",
-            payload: ids,
-          })
-          .then(({code}) => {
-            if(code===0){
-              userPage.getJobList(userPage.state.params);
-            }
-          });
+          type: 'job/pauseJobByIds',
+          payload: ids,
+        }).then(({ code }) => {
+          if (code === 0) {
+            userPage.getJobList(userPage.state.params);
+          }
+        });
       },
-      onCancel() {
-        
-      },
+      onCancel() {},
     });
   }
 
-  resumeJob(){
-    const {selectedRows} = this.state;
+  resumeJob() {
+    const { selectedRows } = this.state;
     const { dispatch } = this.props;
-    if(selectedRows.length===0){
-      message.error("请选择定时任务！！", 10);
-       return ;
+    if (selectedRows.length === 0) {
+      message.error('请选择定时任务！！', 10);
+      return;
     }
-    let ids=new Array();
-    for(var i=0;i<selectedRows.length;i++){
-      ids[i]=selectedRows[i].jobId;
+    let ids = new Array();
+    for (var i = 0; i < selectedRows.length; i++) {
+      ids[i] = selectedRows[i].jobId;
     }
-    let userPage=this;
+    let userPage = this;
     confirm({
       title: '您确定恢复所选定时任务吗?',
       okText: '恢复',
@@ -283,138 +283,137 @@ class Job extends PureComponent {
       cancelText: '取消',
       onOk() {
         dispatch({
-            type: "job/resumeJobByIds",
-            payload: ids,
-          })
-          .then(({code}) => {
-            if(code===0){
-              userPage.getJobList(userPage.state.params);
-            }
-          });
+          type: 'job/resumeJobByIds',
+          payload: ids,
+        }).then(({ code }) => {
+          if (code === 0) {
+            userPage.getJobList(userPage.state.params);
+          }
+        });
       },
-      onCancel() {
-        
-      },
+      onCancel() {},
     });
   }
 
-  goJobLogList(record){
-    this.props.dispatch(routerRedux.push({ 
-      pathname: '/system/job/jobLogList',
-      params: {
-        jobId:record.jobId
-      }
-    }))
+  goJobLogList(record) {
+    this.props.dispatch(
+      routerRedux.push({
+        pathname: '/system/job/jobLogList',
+        query: {
+          jobId: record.jobId,
+        },
+      })
+    );
   }
-
 
   render() {
     const {
-      user:{ currentUser },
-      job: { jobList},
+      user: { currentUser },
+      job: { jobList },
       getJobListLoading,
       saveJobLoading,
       editJobLoading,
       deleteJobByIdsLoading,
       runJobByIdsLoading,
       pauseJobByIdsLoading,
-      resumeJobByIdsLoading
+      resumeJobByIdsLoading,
     } = this.props;
     const columns = [
-        {
-            title: '序号',
-            dataIndex: 'num',
-            key: 'num',
-            render: (record, text, index) => {
-              return <span>{index + 1}</span>;
-            },
-          },
-          {
-            title: 'bean名称',
-            dataIndex: 'beanName',
-            key: 'beanName',
-          },
-          {
-            title: '方法名称',
-            dataIndex: 'methodName',
-            key: 'methodName',
-          },
-          {
-            title: '参数',
-            dataIndex: 'params',
-            key: 'params',
-          },
-          {
-            title: 'cron表达式',
-            dataIndex: 'cronExpression',
-            key: 'cronExpression',
-          },
-          {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
-            render: record => {
-                switch (record) {
-                  case 0:
-                    return <span>正常</span>;
-                    break;
-                  case 1:
-                    return <span>暂停</span>;
-                    break;
-                  default:
-                    break;
-                }
-              },
-          },
+      {
+        title: '序号',
+        dataIndex: 'num',
+        key: 'num',
+        render: (record, text, index) => {
+          return <span>{index + 1}</span>;
+        },
+      },
+      {
+        title: 'bean名称',
+        dataIndex: 'beanName',
+        key: 'beanName',
+      },
+      {
+        title: '方法名称',
+        dataIndex: 'methodName',
+        key: 'methodName',
+      },
+      {
+        title: '参数',
+        dataIndex: 'params',
+        key: 'params',
+      },
+      {
+        title: 'cron表达式',
+        dataIndex: 'cronExpression',
+        key: 'cronExpression',
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        key: 'status',
+        render: record => {
+          switch (record) {
+            case 0:
+              return <span>正常</span>;
+              break;
+            case 1:
+              return <span>暂停</span>;
+              break;
+            default:
+              break;
+          }
+        },
+      },
       {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:update') &&
-            <Tooltip placement="bottom" title="编辑">
-              <Icon
-                type="edit"
-                style={{ fontSize: '15px' }}
-                onClick={() => {
-                  window.modal.current.getWrappedInstance().alertModal({
-                    title: '编辑定时任务',
-                    loading: 'role/editJobInfo',
-                    btnSubTitle: '修改',
-                    component: JobAddOrUpdate,
-                    record,
-                    apply: this.handleSaveJobInfo,
-                  });
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:update') && (
+              <Tooltip placement="bottom" title="编辑">
+                <Icon
+                  type="edit"
+                  style={{ fontSize: '15px' }}
+                  onClick={() => {
+                    window.modal.current.getWrappedInstance().alertModal({
+                      title: '编辑定时任务',
+                      loading: 'role/editJobInfo',
+                      btnSubTitle: '修改',
+                      component: JobAddOrUpdate,
+                      record,
+                      apply: this.handleSaveJobInfo,
+                    });
+                  }}
+                />
+              </Tooltip>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:update') && (
+              <Divider type="vertical" />
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') && (
+              <Popconfirm
+                title="确认删除这个定时任务吗？"
+                okText="删除"
+                cancelText="取消"
+                onConfirm={() => {
+                  let ids = new Array();
+                  ids[0] = record.jobId;
+                  this.deleteJobByIds(ids);
                 }}
-              />
-            </Tooltip>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:update') &&
-            <Divider type="vertical" />
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') &&
-            <Popconfirm
-              title="确认删除这个定时任务吗？"
-              okText="删除"
-              cancelText="取消"
-              onConfirm={() => {
-                let ids=new Array();
-                ids[0]=record.jobId;
-                this.deleteJobByIds(ids);
-              }}
-            >
-              <a>
-                <Tooltip placement="bottom" title="删除">
-                  <Icon type="delete" style={{ fontSize: '15px', color: '#EE4000' }} />
-                </Tooltip>
-              </a>
-            </Popconfirm>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') &&
-            <Divider type="vertical" />
-            }
-            <Button type="link" onClick={()=>this.goJobLogList(record)}>查看日志</Button>
+              >
+                <a>
+                  <Tooltip placement="bottom" title="删除">
+                    <Icon type="delete" style={{ fontSize: '15px', color: '#EE4000' }} />
+                  </Tooltip>
+                </a>
+              </Popconfirm>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') && (
+              <Divider type="vertical" />
+            )}
+            <Button type="link" onClick={() => this.goJobLogList(record)}>
+              查看日志
+            </Button>
           </Fragment>
-      
         ),
       },
     ];
@@ -422,72 +421,80 @@ class Job extends PureComponent {
     return (
       <Card bordered={false}>
         <div className={styles.tableList}>
-        <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
           <div className={styles.tableListOperator}>
-          { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:save') &&
-            <Button
-              icon="plus"
-              type="primary"
-              onClick={() => {
-                window.modal.current.getWrappedInstance().alertModal({
-                  title: '新增定时任务',
-                  btnSubTitle: '新增',
-                  loading: 'job/saveJobInfo',
-                  component: JobAddOrUpdate,
-                  record: {},
-                  apply: this.handleSaveJobInfo,
-                });
-              }}
-            >
-              新增
-            </Button>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') &&
-            <Button
-              icon="delete"
-              type="danger"
-              onClick={() => {
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:save') && (
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => {
+                  window.modal.current.getWrappedInstance().alertModal({
+                    title: '新增定时任务',
+                    btnSubTitle: '新增',
+                    loading: 'job/saveJobInfo',
+                    component: JobAddOrUpdate,
+                    record: {},
+                    apply: this.handleSaveJobInfo,
+                  });
+                }}
+              >
+                新增
+              </Button>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:delete') && (
+              <Button
+                icon="delete"
+                type="danger"
+                onClick={() => {
                   this.batchDeleteJob();
-              }}
-            >
-              批量删除
-            </Button>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:run') &&
-            <Button
-              type="primary"
-              onClick={() => {
+                }}
+              >
+                批量删除
+              </Button>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:run') && (
+              <Button
+                type="primary"
+                onClick={() => {
                   this.runJob();
-              }}
-            >
-              执行任务
-            </Button>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:pause') &&
-            <Button
-              type="primary"
-              onClick={() => {
+                }}
+              >
+                执行任务
+              </Button>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:pause') && (
+              <Button
+                type="primary"
+                onClick={() => {
                   this.pauseJob();
-              }}
-            >
-              暂停任务
-            </Button>
-            }
-            { currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:resume') &&
-            <Button
-              type="primary"
-              onClick={() => {
+                }}
+              >
+                暂停任务
+              </Button>
+            )}
+            {currentUser.permsSet && currentUser.permsSet.includes('sys:schedule:resume') && (
+              <Button
+                type="primary"
+                onClick={() => {
                   this.resumeJob();
-              }}
-            >
-              恢复任务
-            </Button>
-            }
+                }}
+              >
+                恢复任务
+              </Button>
+            )}
           </div>
           <StandardTable
             rowKey="jobId"
             defaultExpandAllRows
-            loading={getJobListLoading||saveJobLoading||editJobLoading||deleteJobByIdsLoading||runJobByIdsLoading||pauseJobByIdsLoading||resumeJobByIdsLoading}
+            loading={
+              getJobListLoading ||
+              saveJobLoading ||
+              editJobLoading ||
+              deleteJobByIdsLoading ||
+              runJobByIdsLoading ||
+              pauseJobByIdsLoading ||
+              resumeJobByIdsLoading
+            }
             selectedRows={true}
             data={jobList}
             columns={columns}
