@@ -17,6 +17,14 @@ export async function saveInfo(params) {
     },
   });
 }
+export async function uploadFile(params) {
+  return request(`/api/sys/file/uploadFile`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
 export async function editInfo(params) {
   return request(`/api/tourism/productInfo/update`, {
     method: 'PUT',

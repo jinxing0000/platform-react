@@ -6,6 +6,7 @@ import {
   deleteByIds,
   lowerShelf,
   upperShelf,
+  uploadFile,
 } from '@/services/tourism/productInfo';
 import { message } from 'antd';
 
@@ -109,6 +110,11 @@ export default {
       } else {
         message.error(result.msg);
       }
+      return result;
+    },
+    //上传图片
+    *uploadFile({ payload }, { call, put }) {
+      const result = yield call(uploadFile, payload);
       return result;
     },
   },
