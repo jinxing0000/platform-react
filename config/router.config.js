@@ -373,6 +373,20 @@ export default [
             path: '/system/log',
             component: './Sys/Log/Log',
           },
+          {
+            path: '/system/dic',
+            routes:[
+              { path: '/system/dic', redirect: '/system/dic/mainList' },
+              {
+                path: '/system/dic/mainList',
+                component: './Sys/Dic/Dic',
+              },
+              {
+                path: '/system/dic/attributeDicList',
+                component: './Sys/Dic/AttributeDic',
+              },
+            ]
+          },
         ],
       },
       //基础管理模块
