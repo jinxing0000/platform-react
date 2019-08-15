@@ -71,7 +71,7 @@ class AttributeDic extends PureComponent {
         const { form, dispatch } = this.props;
         const { params } = this.state;
         form.resetFields();
-        let searchParams = {page:params.page,limit:params.limit}
+        let searchParams = {page:params.page,limit:params.limit,parentCode:params.parentCode}
         this.setState({
             params: searchParams,
         });
