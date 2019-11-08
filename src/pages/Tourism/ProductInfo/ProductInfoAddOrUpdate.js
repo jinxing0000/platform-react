@@ -27,12 +27,10 @@ const { Item: FormItem } = Form;
 const Option = Select.Option;
 
 // 引入编辑器组件
-import BraftEditor from 'braft-editor'
+import BraftEditor from 'braft-editor';
 // 引入编辑器样式
-import 'braft-editor/dist/index.css'
-import { ContentUtils } from 'braft-utils'
-
-
+import 'braft-editor/dist/index.css';
+import { ContentUtils } from 'braft-utils';
 
 @Form.create()
 @connect(({ productInfo, loading }) => ({
@@ -52,12 +50,12 @@ export default class ProductInfoAddOrUpdate extends Component {
       startDate: '2019-07-23',
       startingCity: '晋中市',
       picList: [],
-      productCharacteristic:BraftEditor.createEditorState(null),
-      travelInfo:BraftEditor.createEditorState(null),
-      costInclusion:BraftEditor.createEditorState(null),
-      costExcluded:BraftEditor.createEditorState(null),
-      reservationNotes:BraftEditor.createEditorState(null),
-      returnRules:BraftEditor.createEditorState(null)
+      productCharacteristic: BraftEditor.createEditorState(null),
+      travelInfo: BraftEditor.createEditorState(null),
+      costInclusion: BraftEditor.createEditorState(null),
+      costExcluded: BraftEditor.createEditorState(null),
+      reservationNotes: BraftEditor.createEditorState(null),
+      returnRules: BraftEditor.createEditorState(null),
     },
   };
   componentDidMount() {
@@ -69,12 +67,12 @@ export default class ProductInfoAddOrUpdate extends Component {
         payload: record.id,
       }).then(({ code, data }) => {
         if (code === 0) {
-          data.productCharacteristic=BraftEditor.createEditorState(data.productCharacteristic);
-          data.travelInfo=BraftEditor.createEditorState(data.travelInfo);
-          data.costInclusion=BraftEditor.createEditorState(data.costInclusion);
-          data.costExcluded=BraftEditor.createEditorState(data.costExcluded);
-          data.reservationNotes=BraftEditor.createEditorState(data.reservationNotes);
-          data.returnRules=BraftEditor.createEditorState(data.returnRules);
+          data.productCharacteristic = BraftEditor.createEditorState(data.productCharacteristic);
+          data.travelInfo = BraftEditor.createEditorState(data.travelInfo);
+          data.costInclusion = BraftEditor.createEditorState(data.costInclusion);
+          data.costExcluded = BraftEditor.createEditorState(data.costExcluded);
+          data.reservationNotes = BraftEditor.createEditorState(data.reservationNotes);
+          data.returnRules = BraftEditor.createEditorState(data.returnRules);
           this.setState({ record: data });
         }
       });
@@ -96,23 +94,23 @@ export default class ProductInfoAddOrUpdate extends Component {
     const { picList } = this.state.record;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
-      values.travelInfo=values.travelInfo.toHTML();
-      values.productCharacteristic=values.productCharacteristic.toHTML();
-      values.costInclusion=values.costInclusion.toHTML();
-      values.costExcluded=values.costExcluded.toHTML();
-      values.reservationNotes=values.reservationNotes.toHTML();
-      values.returnRules=values.returnRules.toHTML();
+      values.travelInfo = values.travelInfo.toHTML();
+      values.productCharacteristic = values.productCharacteristic.toHTML();
+      values.costInclusion = values.costInclusion.toHTML();
+      values.costExcluded = values.costExcluded.toHTML();
+      values.reservationNotes = values.reservationNotes.toHTML();
+      values.returnRules = values.returnRules.toHTML();
       values.picList = picList;
       if (!err) {
         if (picList.length === 0) {
           message.error('请上传产品图片！！');
           return;
         }
-        if(values.productCharacteristic==='<p></p>'){
+        if (values.productCharacteristic === '<p></p>') {
           message.error('请输入产品特色！！');
           return;
         }
-        if(values.travelInfo==='<p></p>'){
+        if (values.travelInfo === '<p></p>') {
           message.error('请输入产品简介！！');
           return;
         }
@@ -216,26 +214,25 @@ export default class ProductInfoAddOrUpdate extends Component {
     );
   };
 
-
-  componentWillUnmount () {
-    this.isLivinig = false
+  componentWillUnmount() {
+    this.isLivinig = false;
   }
 
-  handleEditorChange = (editorState) => {
+  handleEditorChange = editorState => {
     // this.setState({
     //   editorState: editorState
     // })
-  }
+  };
 
   //富文本编辑器上传文件
-  myUploadFn = (param) => {
-    const serverURL = '/api/sys/file/uploadFile'
-    const xhr = new XMLHttpRequest
-    const fd = new FormData()
-    const successFn = (response) => {
-    const restult = JSON.parse(response.currentTarget.response);
+  myUploadFn = param => {
+    const serverURL = '/api/sys/file/uploadFile';
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+    const successFn = response => {
+      const restult = JSON.parse(response.currentTarget.response);
       // 上传成功后调用param.success并传入上传后的文件地址
-      if(restult.code===0){
+      if (restult.code === 0) {
         param.success({
           url: restult.fileUrl,
           meta: {
@@ -246,51 +243,82 @@ export default class ProductInfoAddOrUpdate extends Component {
             autoPlay: true, // 指定音视频是否自动播放
             controls: true, // 指定音视频是否显示控制栏
             poster: 'http://xxx/xx.png', // 指定视频播放器的封面
-          }
-        })
-      }else{
+          },
+        });
+      } else {
         param.error({
-          msg: restult.msg
-        })
+          msg: restult.msg,
+        });
       }
-    }
-  
-    const progressFn = (event) => {
+    };
+
+    const progressFn = event => {
       // 上传进度发生变化时调用param.progress
-      param.progress(event.loaded / event.total * 100)
-    }
-  
-    const errorFn = (response) => {
+      param.progress((event.loaded / event.total) * 100);
+    };
+
+    const errorFn = response => {
       // 上传发生错误时调用param.error
       param.error({
-        msg: '上传文件失败！！'
-      })
-    }
-  
-    xhr.upload.addEventListener("progress", progressFn, false)
-    xhr.addEventListener("load", successFn, false)
-    xhr.addEventListener("error", errorFn, false)
-    xhr.addEventListener("abort", errorFn, false)
-    fd.append('file', param.file)
-    fd.append("Authorization", localStorage.getItem('token'))
-    xhr.open('POST', serverURL, true)
-    xhr.send(fd)
-  
-  }
+        msg: '上传文件失败！！',
+      });
+    };
+
+    xhr.upload.addEventListener('progress', progressFn, false);
+    xhr.addEventListener('load', successFn, false);
+    xhr.addEventListener('error', errorFn, false);
+    xhr.addEventListener('abort', errorFn, false);
+    fd.append('file', param.file);
+    fd.append('Authorization', localStorage.getItem('token'));
+    xhr.open('POST', serverURL, true);
+    xhr.send(fd);
+  };
 
   render() {
     const { form, saveLoading, getInfoByIdLoading, editLoading } = this.props;
-    const { record, previewVisible, previewImage,productCharacteristicEditorState,travelInfoEditorState } = this.state;
-    const controls=[
-      'undo', 'redo', 'separator',
-      'font-size', 'line-height', 'letter-spacing', 'separator',
-      'text-color', 'bold', 'italic', 'underline', 'strike-through', 'separator',
-      'superscript', 'subscript', 'remove-styles', 'emoji',  'separator', 'text-indent', 'text-align', 'separator',
-      'headings', 'list-ul', 'list-ol', 'blockquote', 'code', 'separator',
-      'link', 'separator', 'hr', 'separator',
-      'media', 'separator',
-      'clear'
-    ]
+    const {
+      record,
+      previewVisible,
+      previewImage,
+      productCharacteristicEditorState,
+      travelInfoEditorState,
+    } = this.state;
+    const controls = [
+      'undo',
+      'redo',
+      'separator',
+      'font-size',
+      'line-height',
+      'letter-spacing',
+      'separator',
+      'text-color',
+      'bold',
+      'italic',
+      'underline',
+      'strike-through',
+      'separator',
+      'superscript',
+      'subscript',
+      'remove-styles',
+      'emoji',
+      'separator',
+      'text-indent',
+      'text-align',
+      'separator',
+      'headings',
+      'list-ul',
+      'list-ol',
+      'blockquote',
+      'code',
+      'separator',
+      'link',
+      'separator',
+      'hr',
+      'separator',
+      'media',
+      'separator',
+      'clear',
+    ];
     return (
       <Form onSubmit={this.okHandler}>
         {form.getFieldDecorator('id', {
@@ -411,7 +439,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                 {form.getFieldDecorator('endDate', {
                   rules: [{ required: true, message: '请输入日期范围结束' }],
                   initialValue: record.endDate ? moment(record.endDate, 'YYYY-MM-DD') : null,
-                })(<DatePicker style={{ width: '100%' }} />)} 
+                })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
           </Row>
@@ -504,16 +532,18 @@ export default class ProductInfoAddOrUpdate extends Component {
         >
           <FormItem labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} label="">
             {form.getFieldDecorator('productCharacteristic', {
-              rules: [{
-                validator: (_, value, callback) => {
-                  let str=value.toHTML()
-                  if (str!=='<p></p>'){
-                    callback()
-                  } else {
-                    callback('请输入产品特色')
-                  }
-                }
-              }],
+              rules: [
+                {
+                  validator: (_, value, callback) => {
+                    let str = value.toHTML();
+                    if (str !== '<p></p>') {
+                      callback();
+                    } else {
+                      callback('请输入产品特色');
+                    }
+                  },
+                },
+              ],
               initialValue: record.productCharacteristic ? record.productCharacteristic : null,
             })(
               <BraftEditor
@@ -523,7 +553,7 @@ export default class ProductInfoAddOrUpdate extends Component {
                 placeholder="请输入产品特色"
                 //extendControls={extendControls}
                 controls={controls}
-                media={{ uploadFn: this.myUploadFn}}
+                media={{ uploadFn: this.myUploadFn }}
               />
             )}
           </FormItem>
@@ -536,21 +566,23 @@ export default class ProductInfoAddOrUpdate extends Component {
             loading={getInfoByIdLoading || saveLoading || editLoading}
           >
             {form.getFieldDecorator('travelInfo', {
-              rules: [{
-                validator: (_, value, callback) => {
-                  let str=value.toHTML()
-                  if (str!=='<p></p>'){
-                    callback()
-                  } else {
-                    callback('请输入行程介绍')
-                  }
-                }
-              }],
+              rules: [
+                {
+                  validator: (_, value, callback) => {
+                    let str = value.toHTML();
+                    if (str !== '<p></p>') {
+                      callback();
+                    } else {
+                      callback('请输入行程介绍');
+                    }
+                  },
+                },
+              ],
               initialValue: record.travelInfo ? record.travelInfo : null,
             })(
               <BraftEditor
                 className="my-editor"
-                value={ record.travelInfo }
+                value={record.travelInfo}
                 onChange={this.handleEditorChange}
                 placeholder="请输入行程介绍"
                 //extendControls={extendControls}
@@ -573,7 +605,7 @@ export default class ProductInfoAddOrUpdate extends Component {
             })(
               <BraftEditor
                 className="my-editor"
-                value={ record.costInclusion }
+                value={record.costInclusion}
                 onChange={this.handleEditorChange}
                 placeholder="请输入费用包含"
                 //extendControls={extendControls}
@@ -596,7 +628,7 @@ export default class ProductInfoAddOrUpdate extends Component {
             })(
               <BraftEditor
                 className="my-editor"
-                value={ record.costExcluded }
+                value={record.costExcluded}
                 onChange={this.handleEditorChange}
                 placeholder="请输入费用不含"
                 //extendControls={extendControls}
@@ -619,7 +651,7 @@ export default class ProductInfoAddOrUpdate extends Component {
             })(
               <BraftEditor
                 className="my-editor"
-                value={ record.reservationNotes }
+                value={record.reservationNotes}
                 onChange={this.handleEditorChange}
                 placeholder="请输入费用不含"
                 //extendControls={extendControls}
@@ -642,7 +674,7 @@ export default class ProductInfoAddOrUpdate extends Component {
             })(
               <BraftEditor
                 className="my-editor"
-                value={ record.returnRules }
+                value={record.returnRules}
                 onChange={this.handleEditorChange}
                 placeholder="请输入退改规则"
                 //extendControls={extendControls}

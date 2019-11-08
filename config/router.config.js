@@ -375,7 +375,7 @@ export default [
           },
           {
             path: '/system/dic',
-            routes:[
+            routes: [
               { path: '/system/dic', redirect: '/system/dic/mainList' },
               {
                 path: '/system/dic/mainList',
@@ -385,7 +385,7 @@ export default [
                 path: '/system/dic/attributeDicList',
                 component: './Sys/Dic/AttributeDic',
               },
-            ]
+            ],
           },
         ],
       },
@@ -416,6 +416,26 @@ export default [
               {
                 path: '/tourism/productInfo/addOrUpdate',
                 component: './Tourism/ProductInfo/ProductInfoAddOrUpdate',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: '/order',
+        routes: [
+          {
+            path: '/order/orderList',
+            routes: [
+              { path: '/order/orderList', redirect: '/order/orderList/pageList' },
+              {
+                path: '/order/orderList/pageList',
+                component: './Tourism/ProductOrder/ProductOrder',
+              },
+              //产品新增修改页面
+              {
+                path: '/order/orderList/orderDetails',
+                component: './Tourism/ProductOrder/OrderDetails',
               },
             ],
           },
