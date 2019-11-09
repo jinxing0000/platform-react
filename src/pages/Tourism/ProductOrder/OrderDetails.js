@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Col,
@@ -16,6 +16,9 @@ import {
   InputNumber,
   DatePicker,
   Button,
+  Tooltip,
+  Divider,
+  Popconfirm,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import BTreeSelect from '../../../components/nd_component/BTreeSelect';
@@ -31,12 +34,15 @@ import BraftEditor from 'braft-editor';
 // 引入编辑器样式
 import 'braft-editor/dist/index.css';
 import { ContentUtils } from 'braft-utils';
+import ProductOrderPeopleAddOrUpdate from '../ProductOrderPeople/ProductOrderPeopleAddOrUpdate';
+import StandardTable from '../../../components/StandardTable';
 
 @Form.create()
 @connect(({ productOrder, loading }) => ({
   productOrder,
-  saveLoading: loading.effects['productInfo/saveInfo'],
-  editLoading: loading.effects['productInfo/editInfo'],
+  handleOrderByIdLoading: loading.effects['productInfo/handleOrderById'],
+  completeOrderByIdLoading: loading.effects['productInfo/completeOrderById'],
+  cancelOrderByIdLoading: loading.effects['productInfo/cancelOrderById'],
   getInfoByIdLoading: loading.effects['productOrder/getInfoById'],
 }))
 export default class OrderDetails extends Component {
@@ -46,7 +52,7 @@ export default class OrderDetails extends Component {
     record: {},
     productInfo: {},
     productOrderInfo: {},
-    productOrderPeopleList: [],
+    productOrderPeople: {},
   };
   componentDidMount() {
     const { dispatch } = this.props;
@@ -61,7 +67,7 @@ export default class OrderDetails extends Component {
             record: data,
             productInfo: data.productInfo,
             productOrderInfo: data.productOrderInfo,
-            productOrderPeopleList: data.productOrderPeopleList,
+            productOrderPeople: { list: data.productOrderPeopleList },
           });
         }
       });
@@ -115,20 +121,111 @@ export default class OrderDetails extends Component {
       }
     });
   };
-  //返回产品列表页面
-  goToProductList = () => {
+  //返回订单列表页面
+  goToOrderList = () => {
     this.props.dispatch(
       routerRedux.push({
-        pathname: '/tourism/productInfo/list',
+        pathname: '/order/orderList',
         query: {
           record: {},
         },
       })
     );
   };
+  //订单处理
+  orderHandle = () => {
+    const { productOrderInfo } = this.state;
+    let orderId = productOrderInfo.id;
+    let state = productOrderInfo.state;
+    if (state === '02') {
+      message.error('订单已经处理，请勿重复操作！！');
+      return;
+    } else if (state !== '01') {
+      message.error('只有未处理的订单才能处理！！');
+      return;
+    }
+    const { dispatch } = this.props;
+    //处理订单
+    dispatch({
+      type: 'productOrder/handleOrderById',
+      payload: { id: orderId },
+    }).then(({ code }) => {
+      if (code === 0) {
+        this.goToOrderList();
+      }
+    });
+  };
+
+  //订单完成
+  orderComplete = () => {
+    const { productOrderInfo } = this.state;
+    let orderId = productOrderInfo.id;
+    let state = productOrderInfo.state;
+    let transactionPrice = productOrderInfo.transactionPrice;
+    if (!transactionPrice) {
+      message.error('请输入实际成交价格！！');
+      return;
+    }
+    if (state === '03') {
+      message.error('订单已经完成，请勿重复操作！！');
+      return;
+    } else if (state !== '02') {
+      message.error('只有未出行的订单才能处理！！');
+      return;
+    }
+    const { dispatch } = this.props;
+    //完成订单;
+    dispatch({
+      type: 'productOrder/completeOrderById',
+      payload: { id: orderId, transactionPrice: transactionPrice },
+    }).then(({ code }) => {
+      if (code === 0) {
+        this.goToOrderList();
+      }
+    });
+  };
+
+  setOrderTransactionPrice = e => {
+    const { productOrderInfo } = this.state;
+    let transactionPrice = e.target.value;
+    productOrderInfo.transactionPrice = transactionPrice;
+    this.setState({
+      productOrderInfo: productOrderInfo,
+    });
+  };
+
+  //订单取消
+  orderCancel = () => {
+    const { productOrderInfo } = this.state;
+    let orderId = productOrderInfo.id;
+    let state = productOrderInfo.state;
+    if (state === '04') {
+      message.error('订单已经取消，请勿重复操作！！');
+      return;
+    } else if (state !== '01') {
+      message.error('只有未处理的订单才能处理！！');
+      return;
+    }
+    const { dispatch } = this.props;
+    //处理订单
+    dispatch({
+      type: 'productOrder/cancelOrderById',
+      payload: { id: orderId },
+    }).then(({ code }) => {
+      if (code === 0) {
+        this.goToOrderList();
+      }
+    });
+  };
 
   render() {
-    const { form, saveLoading, getInfoByIdLoading, editLoading } = this.props;
+    const {
+      form,
+      getInfoByIdLoading,
+      handleOrderByIdLoading,
+      completeOrderByIdLoading,
+      cancelOrderByIdLoading,
+    } = this.props;
     const {
       record,
       previewVisible,
@@ -137,21 +234,73 @@ export default class OrderDetails extends Component {
       travelInfoEditorState,
       productInfo,
       productOrderInfo,
+      productOrderPeople,
     } = this.state;
+    const columns = [
+      {
+        title: '序号',
+        dataIndex: 'num',
+        key: 'num',
+        render: (record, text, index) => {
+          return <span>{index + 1}</span>;
+        },
+      },
+      // {
+      //   title: '订单id',
+      //   dataIndex: 'orderId',
+      //   key: 'orderId',
+      // },
+      {
+        title: '游客姓名',
+        dataIndex: 'name',
+        key: 'name',
+      },
+      {
+        title: '身份证号',
+        dataIndex: 'cardNumber',
+        key: 'cardNumber',
+      },
+      {
+        title: '手机号码',
+        dataIndex: 'mobile',
+        key: 'mobile',
+      },
+      {
+        title: '性别',
+        dataIndex: 'sex',
+        key: 'sex',
+      },
+      {
+        title: '出生日期',
+        dataIndex: 'birthDate',
+        key: 'birthDate',
+      },
+      {
+        title: '年龄',
+        dataIndex: 'age',
+        key: 'age',
+      },
+    ];
+
     return (
       <Form onSubmit={this.okHandler}>
         <Card
           title="产品信息"
           className={styles.card}
           bordered={false}
-          loading={getInfoByIdLoading || saveLoading || editLoading}
+          loading={
+            getInfoByIdLoading ||
+            handleOrderByIdLoading ||
+            completeOrderByIdLoading ||
+            cancelOrderByIdLoading
+          }
         >
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col span={12}>
               <FormItem labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} label="产品名称">
                 {form.getFieldDecorator('productName', {
                   initialValue: productInfo.productName ? productInfo.productName : null,
-                })(<Input placeholder="请输入产品名称" disabled="disabled" />)}
+                })(<Input placeholder="产品名称" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -277,28 +426,28 @@ export default class OrderDetails extends Component {
               <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="成人价格">
                 {form.getFieldDecorator('adultPrice', {
                   initialValue: productInfo.adultPrice ? productInfo.adultPrice : null,
-                })(<Input placeholder="请输入成人价格" addonAfter="元" disabled="disabled" />)}
+                })(<Input placeholder="成人价格" addonAfter="元" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
               <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="儿童价格">
                 {form.getFieldDecorator('childrenPrice', {
                   initialValue: productInfo.childrenPrice ? productInfo.childrenPrice : null,
-                })(<Input placeholder="请输入儿童价格" addonAfter="元" disabled="disabled" />)}
+                })(<Input placeholder="儿童价格" addonAfter="元" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
               <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="单房差">
                 {form.getFieldDecorator('singleRoomPrice', {
                   initialValue: productInfo.singleRoomPrice ? productInfo.singleRoomPrice : null,
-                })(<Input placeholder="请输入单房差" addonAfter="元" disabled="disabled" />)}
+                })(<Input placeholder="单房差" addonAfter="元" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
               <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="咨询电话">
                 {form.getFieldDecorator('contactNumber', {
                   initialValue: productInfo.contactNumber ? productInfo.contactNumber : null,
-                })(<Input placeholder="请输入咨询电话" disabled="disabled" />)}
+                })(<Input placeholder="咨询电话" disabled="disabled" />)}
               </FormItem>
             </Col>
           </Row>
@@ -307,14 +456,25 @@ export default class OrderDetails extends Component {
           title="订单信息"
           className={styles.card}
           bordered={false}
-          loading={getInfoByIdLoading || saveLoading || editLoading}
+          loading={
+            getInfoByIdLoading ||
+            handleOrderByIdLoading ||
+            completeOrderByIdLoading ||
+            cancelOrderByIdLoading
+          }
         >
+          {form.getFieldDecorator('id', {
+            initialValue: productOrderInfo.id ? productOrderInfo.id : null,
+          })(<Input type="hidden" />)}
+          {form.getFieldDecorator('state', {
+            initialValue: productOrderInfo.state ? productOrderInfo.state : null,
+          })(<Input type="hidden" />)}
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col span={6}>
               <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="成人">
                 {form.getFieldDecorator('adultNumber', {
                   initialValue: productOrderInfo.adultNumber ? productOrderInfo.adultNumber : null,
-                })(<Input placeholder="请输入成人人数" addonAfter="人" disabled="disabled" />)}
+                })(<Input placeholder="成人人数" addonAfter="人" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -323,7 +483,7 @@ export default class OrderDetails extends Component {
                   initialValue: productOrderInfo.childrenNumber
                     ? productOrderInfo.childrenNumber
                     : null,
-                })(<Input placeholder="请输入儿童人数" addonAfter="人" disabled="disabled" />)}
+                })(<Input placeholder="儿童人数" addonAfter="人" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -332,7 +492,7 @@ export default class OrderDetails extends Component {
                   initialValue: productOrderInfo.singleRoomNumber
                     ? productOrderInfo.singleRoomNumber
                     : null,
-                })(<Input placeholder="请输入单房差间数" addonAfter="间" disabled="disabled" />)}
+                })(<Input placeholder="单房差间数" addonAfter="间" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -359,16 +519,114 @@ export default class OrderDetails extends Component {
                   initialValue: productOrderInfo.contactsName
                     ? productOrderInfo.contactsName
                     : null,
-                })(<Input placeholder="请输入联系人" disabled="disabled" />)}
+                })(<Input placeholder="联系人" disabled="disabled" />)}
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="单房差">
-                {form.getFieldDecorator('singleRoomNumber', {
-                  initialValue: productOrderInfo.singleRoomNumber
-                    ? productOrderInfo.singleRoomNumber
+              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="联系电话">
+                {form.getFieldDecorator('contactNumber', {
+                  initialValue: productOrderInfo.contactNumber
+                    ? productOrderInfo.contactNumber
                     : null,
-                })(<Input placeholder="请输入单房差间数" addonAfter="间" disabled="disabled" />)}
+                })(<Input placeholder="联系电话" disabled="disabled" />)}
+              </FormItem>
+            </Col>
+            <Col span={6}>
+              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="邮箱">
+                {form.getFieldDecorator('email', {
+                  initialValue: productOrderInfo.email ? productOrderInfo.email : null,
+                })(<Input placeholder="邮箱" disabled="disabled" />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col span={6}>
+              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="渠道商名称">
+                {form.getFieldDecorator('channelMerchantsName', {
+                  initialValue: productOrderInfo.channelMerchantsName
+                    ? productOrderInfo.channelMerchantsName
+                    : null,
+                })(<Input placeholder="渠道商名称" disabled="disabled" />)}
+              </FormItem>
+            </Col>
+            <Col span={6}>
+              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="供应商名称">
+                {form.getFieldDecorator('supplierName', {
+                  initialValue: productOrderInfo.supplierName
+                    ? productOrderInfo.supplierName
+                    : null,
+                })(<Input placeholder="供应商名称" disabled="disabled" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} label="客户留言">
+                {form.getFieldDecorator('leavingMessage', {
+                  initialValue: productOrderInfo.leavingMessage
+                    ? productOrderInfo.leavingMessage
+                    : null,
+                })(<Input placeholder="客户留言" disabled="disabled" />)}
+              </FormItem>
+            </Col>
+          </Row>
+        </Card>
+        <Card
+          title="订单出行人"
+          className={styles.card}
+          bordered={false}
+          loading={
+            getInfoByIdLoading ||
+            handleOrderByIdLoading ||
+            completeOrderByIdLoading ||
+            cancelOrderByIdLoading
+          }
+        >
+          <StandardTable
+            rowKey="id"
+            defaultExpandAllRows
+            loading={
+              getInfoByIdLoading ||
+              handleOrderByIdLoading ||
+              completeOrderByIdLoading ||
+              cancelOrderByIdLoading
+            }
+            selectedRows={false}
+            data={productOrderPeople}
+            columns={columns}
+            pagination={false}
+          />
+        </Card>
+        <Card
+          title="订单操作"
+          className={styles.card}
+          bordered={false}
+          loading={
+            getInfoByIdLoading ||
+            handleOrderByIdLoading ||
+            completeOrderByIdLoading ||
+            cancelOrderByIdLoading
+          }
+        >
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col span={6}>
+              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="订单状态">
+                {form.getFieldDecorator('state', {
+                  initialValue: productOrderInfo.state ? productOrderInfo.state : null,
+                })(
+                  <Select style={{ width: '100%' }} disabled="disabled">
+                    <Select.Option key="01" value="01">
+                      未处理
+                    </Select.Option>
+                    <Select.Option key="02" value="02">
+                      未出行
+                    </Select.Option>
+                    <Select.Option key="03" value="03">
+                      已完成
+                    </Select.Option>
+                    <Select.Option key="04" value="04">
+                      已取消
+                    </Select.Option>
+                  </Select>
+                )}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -378,28 +636,63 @@ export default class OrderDetails extends Component {
                 })(<Input placeholder="订单总金额" addonAfter="元" disabled="disabled" />)}
               </FormItem>
             </Col>
+            <Col span={6}>
+              <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="实际成交价格">
+                {form.getFieldDecorator('transactionPrice', {
+                  initialValue: productOrderInfo.transactionPrice
+                    ? productOrderInfo.transactionPrice
+                    : null,
+                })(
+                  <Input
+                    placeholder="输入实际成交价格"
+                    addonAfter="元"
+                    onBlur={this.setOrderTransactionPrice}
+                  />
+                )}
+              </FormItem>
+            </Col>
           </Row>
-        </Card>
-        <Card
-          title="订单出行人"
-          className={styles.card}
-          bordered={false}
-          loading={getInfoByIdLoading || saveLoading || editLoading}
-        ></Card>
-        <Card
-          title=""
-          className={styles.card}
-          bordered={false}
-          loading={getInfoByIdLoading || saveLoading || editLoading}
-        >
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col span={10}></Col>
             <Col span={14}>
-              <Button type="primary" htmlType="submit">
-                保存
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.goToProductList}>
-                返回
+              <Popconfirm
+                title="确定要处理订单吗？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => {
+                  this.orderHandle();
+                }}
+              >
+                <Button style={{ marginLeft: 8 }} type="primary">
+                  处理订单
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                title="确定要完成订单吗？"
+                okText="完成"
+                cancelText="取消"
+                onConfirm={() => {
+                  this.orderComplete();
+                }}
+              >
+                <Button style={{ marginLeft: 8 }} type="primary">
+                  完成订单
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                title="确定要取消订单吗？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => {
+                  this.orderCancel();
+                }}
+              >
+                <Button style={{ marginLeft: 8 }} type="primary">
+                  取消订单
+                </Button>
+              </Popconfirm>
+              <Button style={{ marginLeft: 8 }} onClick={this.goToOrderList}>
+                返回订单
               </Button>
             </Col>
           </Row>

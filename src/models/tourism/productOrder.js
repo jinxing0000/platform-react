@@ -4,6 +4,9 @@ import {
   getInfoById,
   editInfo,
   deleteByIds,
+  handleOrderById,
+  completeOrderById,
+  cancelOrderById,
 } from '@/services/tourism/productOrder';
 import { message } from 'antd';
 
@@ -77,6 +80,33 @@ export default {
           type: 'setInfo',
           payload: result.data,
         });
+      } else {
+        message.error(result.msg);
+      }
+      return result;
+    },
+    *handleOrderById({ payload }, { call, put }) {
+      const result = yield call(handleOrderById, payload);
+      if (result.code === 0) {
+        message.success('订单处理成功！！');
+      } else {
+        message.error(result.msg);
+      }
+      return result;
+    },
+    *completeOrderById({ payload }, { call, put }) {
+      const result = yield call(completeOrderById, payload);
+      if (result.code === 0) {
+        message.success('订单已完成！！');
+      } else {
+        message.error(result.msg);
+      }
+      return result;
+    },
+    *cancelOrderById({ payload }, { call, put }) {
+      const result = yield call(cancelOrderById, payload);
+      if (result.code === 0) {
+        message.success('订单已取消成功！！');
       } else {
         message.error(result.msg);
       }

@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import {
   Row,
   Col,
@@ -292,6 +293,17 @@ class ProductOrder extends PureComponent {
         title: '产品名称',
         dataIndex: 'productName',
         key: 'productName',
+        render: (record, text, index) => {
+          return (
+            <a
+              onClick={() => {
+                this.goToOrderDetailsPage(text.id);
+              }}
+            >
+              {record}
+            </a>
+          );
+        },
       },
       // {
       //   title: '产品引导图',
@@ -405,69 +417,69 @@ class ProductOrder extends PureComponent {
       //   dataIndex: 'supplierId',
       //   key: 'supplierId',
       // },
-      {
-        title: '操作',
-        render: (text, record) => (
-          <Fragment>
-            {currentUser.permsSet && currentUser.permsSet.includes('tourism:productOrder:handle') && (
-              <Tooltip placement="bottom" title="处理">
-                <Icon
-                  type="edit"
-                  style={{ fontSize: '15px' }}
-                  onClick={() => {
-                    this.goToOrderDetailsPage(record.id);
-                  }}
-                />
-              </Tooltip>
-            )}
-            {currentUser.permsSet &&
-              currentUser.permsSet.includes('tourism:productOrder:handle') && (
-                <Divider type="vertical" />
-              )}
-            {currentUser.permsSet &&
-              currentUser.permsSet.includes('tourism:productOrder:complete') && (
-                <Tooltip placement="bottom" title="处理">
-                  <Icon
-                    type="edit"
-                    style={{ fontSize: '15px' }}
-                    onClick={() => {
-                      window.modal.current.getWrappedInstance().alertModal({
-                        title: '编辑',
-                        loading: 'productOrder/editInfo',
-                        btnSubTitle: '修改',
-                        component: ProductOrderAddOrUpdate,
-                        record,
-                        apply: this.handleSaveInfo,
-                      });
-                    }}
-                  />
-                </Tooltip>
-              )}
-            {currentUser.permsSet &&
-              currentUser.permsSet.includes('tourism:productOrder:complete') && (
-                <Divider type="vertical" />
-              )}
-            {currentUser.permsSet && currentUser.permsSet.includes('tourism:productOrder:cancel') && (
-              <Popconfirm
-                title="确认取消订单吗？"
-                okText="取消"
-                cancelText="不取消"
-                onConfirm={() => {
-                  let ids = new Array();
-                  ids[0] = record.id;
-                  this.deleteByIds(ids);
-                }}
-              >
-                <a>
-                  <Tooltip placement="bottom" title="取消订单">
-                    <Icon type="delete" style={{ fontSize: '15px', color: '#EE4000' }} />
-                  </Tooltip>
-                </a>
-              </Popconfirm>
-            )}
-          </Fragment>
-        ),
-      },
+      // {
+      //   title: '操作',
+      //   render: (text, record) => (
+      //     <Fragment>
+      //       {currentUser.permsSet && currentUser.permsSet.includes('tourism:productOrder:handle') && (
+      //         <Tooltip placement="bottom" title="处理">
+      //           <Icon
+      //             type="edit"
+      //             style={{ fontSize: '15px' }}
+      //             onClick={() => {
+      //               this.goToOrderDetailsPage(record.id);
+      //             }}
+      //           />
+      //         </Tooltip>
+      //       )}
+      //       {currentUser.permsSet &&
+      //         currentUser.permsSet.includes('tourism:productOrder:handle') && (
+      //           <Divider type="vertical" />
+      //         )}
+      //       {currentUser.permsSet &&
+      //         currentUser.permsSet.includes('tourism:productOrder:complete') && (
+      //           <Tooltip placement="bottom" title="处理">
+      //             <Icon
+      //               type="edit"
+      //               style={{ fontSize: '15px' }}
+      //               onClick={() => {
+      //                 window.modal.current.getWrappedInstance().alertModal({
+      //                   title: '编辑',
+      //                   loading: 'productOrder/editInfo',
+      //                   btnSubTitle: '修改',
+      //                   component: ProductOrderAddOrUpdate,
+      //                   record,
+      //                   apply: this.handleSaveInfo,
+      //                 });
+      //               }}
+      //             />
+      //           </Tooltip>
+      //         )}
+      //       {currentUser.permsSet &&
+      //         currentUser.permsSet.includes('tourism:productOrder:complete') && (
+      //           <Divider type="vertical" />
+      //         )}
+      //       {currentUser.permsSet && currentUser.permsSet.includes('tourism:productOrder:cancel') && (
+      //         <Popconfirm
+      //           title="确认取消订单吗？"
+      //           okText="取消"
+      //           cancelText="不取消"
+      //           onConfirm={() => {
+      //             let ids = new Array();
+      //             ids[0] = record.id;
+      //             this.deleteByIds(ids);
+      //           }}
+      //         >
+      //           <a>
+      //             <Tooltip placement="bottom" title="取消订单">
+      //               <Icon type="delete" style={{ fontSize: '15px', color: '#EE4000' }} />
+      //             </Tooltip>
+      //           </a>
+      //         </Popconfirm>
+      //       )}
+      //     </Fragment>
+      //   ),
+      // },
     ];
     return (
       <Card bordered={false}>

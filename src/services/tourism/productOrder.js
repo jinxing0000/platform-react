@@ -34,3 +34,28 @@ export async function deleteByIds(params) {
 export async function getInfoById(id) {
   return request(`/api/tourism/productOrder/info?id=${id}`);
 }
+
+export async function handleOrderById(params) {
+  return request(`/api/tourism/productOrder/handle`, {
+    method: 'PUT',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function completeOrderById(params) {
+  return request(`/api/tourism/productOrder/complete`, {
+    method: 'PUT',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function cancelOrderById(params) {
+  return request(`/api/tourism/productOrder/cancel`, {
+    method: 'PUT',
+    data: {
+      ...params,
+    },
+  });
+}
