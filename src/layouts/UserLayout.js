@@ -30,7 +30,8 @@ const links = [
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" />山西省农业补贴平台
+    Copyright <Icon type="copyright" />
+    山西省旅游信息平台
   </Fragment>
 );
 
@@ -63,7 +64,7 @@ class UserLayout extends Component {
               <div className={styles.header}>
                 <Link to="/">
                   <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}>山西省农业补贴平台</span>
+                  <span className={styles.title}>山西省旅游信息平台</span>
                 </Link>
               </div>
               {/* <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div> */}

@@ -3,7 +3,13 @@ import isEqual from 'lodash/isEqual';
 import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
 import { menu } from '../../defaultSettings';
-import { queryCurrent,getMenuTreeList,saveMenuInfo,editMenuInfo,deleteMenuById } from '@/services/sys/menu';
+import {
+  queryCurrent,
+  getMenuTreeList,
+  saveMenuInfo,
+  editMenuInfo,
+  deleteMenuById,
+} from '@/services/sys/menu';
 import { message } from 'antd';
 
 const { check } = Authorized;
@@ -112,14 +118,14 @@ export default {
       pagination: {
         current: 1,
         total: 0,
-        pageSize: 10, 
+        pageSize: 10,
       },
-     },
+    },
   },
 
   effects: {
-    *getMenuData({ payload }, { call,put }) {
-      const { routes, authority, path,menuList } = payload;
+    *getMenuData({ payload }, { call, put }) {
+      const { routes, authority, path, menuList } = payload;
       const originalMenuData = memoizeOneFormatter(routes, authority, path);
       const menuData = menuList;
       const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(originalMenuData);
@@ -128,9 +134,9 @@ export default {
         payload: { menuData, breadcrumbNameMap, routerData: routes },
       });
     },
-    *getMenuTreeList({ payload }, { call,put }){
+    *getMenuTreeList({ payload }, { call, put }) {
       const result = yield call(getMenuTreeList, payload);
-      if(result.code===0){
+      if (result.code === 0) {
         yield put({
           type: 'updateMenuTreeList',
           payload: {
@@ -138,40 +144,40 @@ export default {
             pagination: { current: 1, total: 3, pageSize: 10 },
           },
         });
-      }else{
+      } else {
         message.error(result.msg);
       }
     },
-    *saveMenuInfo({ payload }, { call, put }){
-      const parentId=payload.parentId;
-      if(parentId==null){
-        payload.parentId="0";
+    *saveMenuInfo({ payload }, { call, put }) {
+      const parentId = payload.parentId;
+      if (parentId == null) {
+        payload.parentId = '0';
       }
       const result = yield call(saveMenuInfo, payload);
-      if(result.code===0){
-        message.success("新增成功！！");
-      }else{
+      if (result.code === 0) {
+        message.success('新增成功！！');
+      } else {
         message.error(result.msg);
       }
       return result;
     },
-    *editMenuInfo({ payload }, { call, put }){
-      if(payload.parentId==='根目录'){
-        payload.parentId="0";
+    *editMenuInfo({ payload }, { call, put }) {
+      if (payload.parentId === '根目录') {
+        payload.parentId = '0';
       }
       const result = yield call(editMenuInfo, payload);
-      if(result.code===0){
-        message.success("修改成功！！");
-      }else{
+      if (result.code === 0) {
+        message.success('修改成功！！');
+      } else {
         message.error(result.msg);
       }
       return result;
     },
-    *deleteMenuById({ payload }, { call, put }){
+    *deleteMenuById({ payload }, { call, put }) {
       const result = yield call(deleteMenuById, payload);
-      if(result.code===0){
-        message.success("删除成功！！");
-      }else{
+      if (result.code === 0) {
+        message.success('删除成功！！');
+      } else {
         message.error(result.msg);
       }
       return result;
@@ -186,7 +192,7 @@ export default {
       };
     },
     updateMenuTreeList(state, { payload }) {
-        return { ...state, menuTreeList: payload };
+      return { ...state, menuTreeList: payload };
     },
   },
 };
