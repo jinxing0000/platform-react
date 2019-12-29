@@ -151,12 +151,12 @@ export default class ProductInfoAddOrUpdate extends Component {
     const { record } = this.state;
     //后端成功返回数据
     if (file.status === 'done') {
-      const { msg, code, fileUrl, minioPath } = file.response;
+      const { msg, code, data } = file.response;
       if (code === 0) {
         for (let i = 0; i < fileList.length; i++) {
           if (file.uid === fileList[i].uid) {
-            fileList[i].thumbUrl = fileUrl;
-            fileList[i].minioPath = minioPath;
+            fileList[i].thumbUrl = data.fileUrl;
+            fileList[i].minioPath = data.minioPath;
           }
         }
         record.picList = fileList;

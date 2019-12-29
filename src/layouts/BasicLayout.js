@@ -54,13 +54,12 @@ class BasicLayout extends React.Component {
     } = this.props;
     dispatch({
       type: 'user/fetchCurrent',
-    })
-    .then(({code,data}) => {
-      if(code===0){
-        let menuList=data.menuList;
+    }).then(({ code, data }) => {
+      if (code === 0) {
+        let menuList = data.menuList;
         dispatch({
           type: 'menu/getMenuData',
-          payload: { routes, path, authority, menuList},
+          payload: { routes, path, authority, menuList },
         });
       }
     });
@@ -174,7 +173,7 @@ class BasicLayout extends React.Component {
   }
 }
 
-export default connect(({ global, setting, menu: menuModel,user}) => ({
+export default connect(({ global, setting, menu: menuModel, user }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   menuData: menuModel.menuData,
