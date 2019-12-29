@@ -10,7 +10,7 @@ const { pwa, primaryColor } = defaultSettings;
 const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, TEST } = process.env;
 
 const target = {
-  img: 'http://127.0.0.1:8881',
+  img: 'http://127.0.0.1:8081',
   service: 'http://127.0.0.1:8080',
 };
 
@@ -90,10 +90,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/api': '/api' },
     },
-    '/bettem': {
+    '/platform': {
       target: target.img,
       changeOrigin: true,
-      pathRewrite: { '^/bettem': '/bettem' },
+      pathRewrite: { '^/platform': '/platform' },
     },
   },
   ignoreMomentLocale: true,

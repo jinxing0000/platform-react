@@ -156,7 +156,6 @@ export default class ProductInfoAddOrUpdate extends Component {
         for (let i = 0; i < fileList.length; i++) {
           if (file.uid === fileList[i].uid) {
             fileList[i].thumbUrl = data.fileUrl;
-            fileList[i].minioPath = data.minioPath;
           }
         }
         record.picList = fileList;
@@ -234,9 +233,9 @@ export default class ProductInfoAddOrUpdate extends Component {
       // 上传成功后调用param.success并传入上传后的文件地址
       if (restult.code === 0) {
         param.success({
-          url: restult.data.fileUrl,
+          url: restult.data.minioPath,
           meta: {
-            id: restult.data.fileUrl,
+            id: restult.data.minioPath,
             title: restult.data.fileName,
             alt: restult.data.fileName,
             loop: true, // 指定音视频是否循环播放
