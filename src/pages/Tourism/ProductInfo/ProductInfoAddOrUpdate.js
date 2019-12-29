@@ -234,15 +234,15 @@ export default class ProductInfoAddOrUpdate extends Component {
       // 上传成功后调用param.success并传入上传后的文件地址
       if (restult.code === 0) {
         param.success({
-          url: restult.fileUrl,
+          url: restult.data.fileUrl,
           meta: {
-            id: restult.fileUrl,
-            title: restult.fileName,
-            alt: restult.fileName,
+            id: restult.data.fileUrl,
+            title: restult.data.fileName,
+            alt: restult.data.fileName,
             loop: true, // 指定音视频是否循环播放
             autoPlay: true, // 指定音视频是否自动播放
             controls: true, // 指定音视频是否显示控制栏
-            poster: 'http://xxx/xx.png', // 指定视频播放器的封面
+            //poster: 'http://xxx/xx.png', // 指定视频播放器的封面
           },
         });
       } else {
